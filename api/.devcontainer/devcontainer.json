@@ -1,0 +1,28 @@
+// ----------------------------------------------------------------
+// BackEnd System Integrated Development Environment for PHP
+// Version: 0.9.2
+// ----------------------------------------------------------------
+{
+    "name": "Laravel",
+    "dockerComposeFile": "../docker-compose.yml",
+    "service": "app",
+    "workspaceFolder": "/var/www/app",
+    "customizations": {
+        "vscode": {
+            "settings": {
+                "php.format.codeStyle": "Laravel"
+            },
+            "extensions": [
+                "DEVSENSE.composer-php-vscode",
+                "DEVSENSE.phptools-vscode",
+                "EditorConfig.EditorConfig",
+                "mikestead.dotenv",
+                "onecentlin.laravel-blade",
+                "onecentlin.laravel5-snippets",
+                "xdebug.php-debug"
+            ]
+        }
+    },
+    "remoteUser": "vscode",
+    "postCreateCommand": "sudo chown vscode:vscode -R ${containerWorkspaceFolder}/storage"
+}

@@ -1,0 +1,60 @@
+# ----------------------------------------------------------------
+# BackEnd System Integrated Development Environment for PHP
+# Version: 0.9.2
+# ----------------------------------------------------------------
+version: "3"
+services:
+  app:
+    build:
+      context: ./
+      args:
+        # PHP Version ["7.4", "8.0", "8.1", "8.2", "8.3", "8"(default)]
+        PHP_VERSION: "8"
+        # Laravel Version ["9.*", "10.*"(default)]
+        LARAVEL_VERSION: "10.*"
+        # プロジェクトソースを置くディレクトリ ["/var/www/app"(default) , "/var/www"]
+        # .devcontainer/devcontainer.jsonの "workspaceFolder"も合わせて変更
+        APP_DIR: "/var/www/app"
+        # プロジェクトソースのうち公開するディレクトリ [""(default), "/public", "/webroot"]
+        PUBLIC_DIR: "/public"
+    ports:
+      - "80:80"
+    environment:
+      TZ: "Asia/Tokyo"
+      # https://xdebug.org/docs/all_settings#mode
+      XDEBUG_MODE: "debug"
+      # https://xdebug.org/docs/all_settings#start_with_request
+      XDEBUG_START_WITH_REQUEST: "yes"
+      # https://xdebug.org/docs/all_settings#idekey
+      XDEBUG_IDEKEY: "VSCODE"
+      # https://laravel.com/docs/10.x/installation#databases-and-migrations
+      DB_HOST: "mysql"
+      DB_DATABASE: "${DB_DATABASE}"
+      DB_USERNAME: "${DB_USERNAME}"
+      DB_PASSWORD: "${DB_PASSWORD}"
+    volumes:
+      - ".:/var/www/app"
+
+  mysql:
+    image: mysql
+    environment:
+      TZ: "Asia/Tokyo"
+      MYSQL_DATABASE: "${DB_DATABASE}"
+      MYSQL_USER: "${DB_USERNAME}"
+      MYSQL_PASSWORD: "${DB_PASSWORD}"
+      MYSQL_RANDOM_ROOT_PASSWORD: "yes"
+#    volumes:
+#      - "mysql:/var/lib/mysql"
+#      - "./vendor/laravel/sail/database/mysql/create-testing-database.sh:/docker-entrypoint-initdb.d/10-create-testing-database.sh"
+    cap_add:
+      - SYS_NICE
+
+  phpmyadmin:
+    image: phpmyadmin
+    ports:
+      - "8080:80"
+    environment:
+      PMA_ARBITRARY: 1
+
+#volumes:
+#  mysql:
