@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\PostController;
+use App\Http\Controllers\CommentController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -28,3 +29,9 @@ Route::get('/posts', [PostController::class, 'index']);
 
 // 自分の投稿取得
 Route::get('/myposts', [PostController::class,'indexMyPosts']);
+
+
+// コメント送信
+Route::post('/posts/{post_id}/comments', [CommentController::class,'store'])
+    ->whereNumber('post_id')
+    ->middleware('ensure.json');
