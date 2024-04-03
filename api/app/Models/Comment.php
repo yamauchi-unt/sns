@@ -19,4 +19,17 @@ class Comment extends Model
         'user_id',
         'comment',
     ];
+
+    // コメント送信
+    public static function store($validated, $post_id)
+    {
+        $comment = Comment::create([
+            'post_id'=> $post_id,
+            // 'user_id' => auth()->user()->id,
+            'user_id' => 'test3',
+            'comment' => $validated['comment'],
+        ]);
+
+        return $comment;
+    }
 }
