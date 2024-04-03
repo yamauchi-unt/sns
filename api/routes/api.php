@@ -38,3 +38,7 @@ Route::get('/posts/{post_id}/comments', [CommentController::class, 'index'])
 Route::post('/posts/{post_id}/comments', [CommentController::class, 'store'])
     ->whereNumber('post_id')
     ->middleware('ensure.json');
+
+// コメント削除
+Route::delete('/comments/{comment_id}', [CommentController::class, 'destroy'])
+    ->whereNumber('comment_id');
