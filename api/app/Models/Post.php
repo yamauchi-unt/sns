@@ -24,7 +24,7 @@ class Post extends Model
     {
         $post = Post::create([
             // 'user_id' => auth()->user()->id,
-            'user_id' => 'abcd1234',
+            'user_id' => 'test3',
             'message' => $validated['message'],
         ]);
 
@@ -37,5 +37,20 @@ class Post extends Model
         $posts = Post::orderBy('id','desc')->paginate(10);
 
         return $posts;
+    }
+
+    // 自分の投稿取得
+    public static function indexMyPosts()
+    {
+        // $userId = auth()->id();
+        // $posts = Post::where('user_id', $userId)
+        //     ->orderBy('id', 'desc')
+        //     ->paginate(10);
+
+        $myposts = Post::where('user_id', 'test3')
+            ->orderBy('id','desc')
+            ->paginate(10);
+
+        return $myposts;
     }
 }
