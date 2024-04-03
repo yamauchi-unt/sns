@@ -40,4 +40,12 @@ class PostController extends Controller
 
         return response()->json($posts, 200);
     }
+
+    // 自分の投稿取得
+    public function indexMyPosts()
+    {
+        $myposts = Post::indexMyPosts();
+
+        return response()->json($myposts, 200);
+    }
 }
