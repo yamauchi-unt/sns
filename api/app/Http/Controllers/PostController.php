@@ -16,21 +16,23 @@ class PostController extends Controller
         // バリデーション済データ取得
         $validated = $request->validated();
 
-        $storedPostId = null;
+        try {
+            DB::beginTransaction();
 
-        DB::transaction(function () use ($validated, &$storedPostId) {
             // 投稿テーブルへ登録
             $post = Post::store($validated);
-            $storedPostId = $post->id;
-
             // 画像ファイル名を変更しパス取得
-            $imagePath = "images/{$storedPostId}.jpeg";
-
+            $imagePath = "images/{$post->id}.jpeg";
             // デコードされた画像データをストレージに保存
             Storage::put($imagePath, $validated['decoded_image']);
-        });
 
-        return response()->json(['post_id' => $storedPostId], 201);
+            DB::commit();
+        } catch (\Exception $e) {
+            DB::rollBack();
+            throw $e;
+        }
+
+        return response()->json(['post_id' => $post->id], 201);
     }
 
     // 投稿取得
