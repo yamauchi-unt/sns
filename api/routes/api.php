@@ -28,10 +28,13 @@ Route::post('/posts', [PostController::class, 'store'])
 Route::get('/posts', [PostController::class, 'index']);
 
 // 自分の投稿取得
-Route::get('/myposts', [PostController::class,'indexMyPosts']);
+Route::get('/myposts', [PostController::class, 'indexMyPosts']);
 
+// コメント取得
+Route::get('/posts/{post_id}/comments', [CommentController::class, 'index'])
+    ->whereNumber('post_id');
 
 // コメント送信
-Route::post('/posts/{post_id}/comments', [CommentController::class,'store'])
+Route::post('/posts/{post_id}/comments', [CommentController::class, 'store'])
     ->whereNumber('post_id')
     ->middleware('ensure.json');

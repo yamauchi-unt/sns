@@ -9,7 +9,15 @@ use App\Models\Comment;
 
 class CommentController extends Controller
 {
-    //コメント送信
+    // コメント取得
+    public function index($post_id)
+    {
+        $comments = Comment::index($post_id);
+
+        return response()->json($comments, 200);
+    }
+
+    // コメント送信
     public function store(StoreCommentRequest $request, $post_id)
     {
         $validated = $request->validated();
