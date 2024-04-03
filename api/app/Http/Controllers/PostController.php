@@ -32,4 +32,12 @@ class PostController extends Controller
 
         return response()->json(['post_id' => $storedPostId], 201);
     }
+
+    // 投稿取得
+    public function index()
+    {
+        $posts = Post::index();
+
+        return response()->json($posts, 200);
+    }
 }

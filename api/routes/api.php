@@ -22,3 +22,6 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 // 投稿
 Route::post('/posts', [PostController::class, 'store'])
     ->middleware('ensure.json');
+
+// 投稿取得
+Route::get('/posts', [PostController::class, 'index']);
