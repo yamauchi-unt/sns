@@ -31,4 +31,11 @@ class Post extends Model
         return $post;
     }
 
+    // 投稿取得
+    public static function index()
+    {
+        $posts = Post::orderBy('id','desc')->paginate(10);
+
+        return $posts;
+    }
 }
