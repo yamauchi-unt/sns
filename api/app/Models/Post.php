@@ -19,4 +19,16 @@ class Post extends Model
         'message',
     ];
 
+    // 投稿を登録
+    public static function store($validated)
+    {
+        $post = Post::create([
+            // 'user_id' => auth()->user()->id,
+            'user_id' => 'abcd1234',
+            'message' => $validated['message'],
+        ]);
+
+        return $post;
+    }
+
 }
