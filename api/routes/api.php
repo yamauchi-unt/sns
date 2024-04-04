@@ -30,6 +30,10 @@ Route::get('/posts', [PostController::class, 'index']);
 // 自分の投稿取得
 Route::get('/myposts', [PostController::class, 'indexMyPosts']);
 
+// 投稿1件取得
+Route::get('/posts/{post_id}', [PostController::class,'show'])
+    ->whereNumber('post_id');
+
 // コメント取得
 Route::get('/posts/{post_id}/comments', [CommentController::class, 'index'])
     ->whereNumber('post_id');

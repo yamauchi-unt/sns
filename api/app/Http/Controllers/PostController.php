@@ -50,4 +50,30 @@ class PostController extends Controller
 
         return response()->json($myposts, 200);
     }
+
+    // 投稿1件取得
+    public function show($post_id)
+    {
+        $post = Post::show($post_id);
+        // $userId = auth()->id();
+        $userId = 'test1';
+
+        if($post === '404') {
+            return response()->noContent(404);
+        }
+
+        // 自分の投稿か判定
+        $post->mine_frg = $post->user_id === $userId;
+
+        // 画像取得しエンコード
+        $imagePath = "images/{$post->id}.jpeg";
+        if(Storage::exists($imagePath)) {
+            $imageData = Storage::get($imagePath);
+            $post->image = base64_encode($imageData);
+        } else {
+            $post->image = null;
+        }
+
+        return response()->json($post, 200);
+    }
 }
