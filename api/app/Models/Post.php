@@ -9,6 +9,12 @@ class Post extends Model
 {
     use HasFactory;
 
+    // 投稿に紐づくコメントのリレーション
+    public function comments()
+    {
+        return $this->hasMany(Comment::class);
+    }
+
     /**
      * 複数代入可能な属性
      *
@@ -53,4 +59,18 @@ class Post extends Model
 
         return $myposts;
     }
+
+
+    // 投稿1件取得
+    public static function show($post_id)
+    {
+        $post = Post::withCount('comments')->find($post_id);
+
+        if ($post) {
+            return $post;
+        } else {
+            return '404';
+        }
+    }
+
 }
