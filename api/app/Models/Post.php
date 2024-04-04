@@ -73,4 +73,20 @@ class Post extends Model
         }
     }
 
+    // 投稿1件削除
+    public static function deleteIfAuthorized($post_id, $user_id)
+    {
+        $post = Post::find($post_id);
+
+        if (!$post) {
+            return '404';
+        }
+        if ($post->user_id !== $user_id) {
+            return '403';
+        }
+
+        $post->delete();
+        return '204';
+    }
+
 }
