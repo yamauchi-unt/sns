@@ -31,7 +31,11 @@ Route::get('/posts', [PostController::class, 'index']);
 Route::get('/myposts', [PostController::class, 'indexMyPosts']);
 
 // 投稿1件取得
-Route::get('/posts/{post_id}', [PostController::class,'show'])
+Route::get('/posts/{post_id}', [PostController::class, 'show'])
+    ->whereNumber('post_id');
+
+// 投稿1件削除
+Route::delete ('/posts/{post_id}', [PostController::class, 'destroy'])
     ->whereNumber('post_id');
 
 // コメント取得

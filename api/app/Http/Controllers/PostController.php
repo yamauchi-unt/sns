@@ -76,4 +76,39 @@ class PostController extends Controller
 
         return response()->json($post, 200);
     }
+
+    // 投稿1件削除
+    public function destroy($post_id)
+    {
+        // 認証ユーザのユーザID取得
+        // $currentUserId = auth()->user()->id;
+        $currentUserId = 'test1';
+
+        DB::beginTransaction();
+
+        try {
+            $result = Post::deleteIfAuthorized($post_id, $currentUserId);
+
+            switch ($result) {
+                case '204':
+                    $imagePath = "images/{$post_id}.jpeg";
+                    if (Storage::exists($imagePath)) {
+                        Storage::delete($imagePath);
+                    }
+                    DB::commit();
+                    return response()->noContent(204);
+
+                case '403':
+                    DB::rollBack();
+                    return response()->noContent(403);
+
+                case '404':
+                    DB::rollBack();
+                    return response()->noContent(404);
+                }
+        } catch (\Exception $e) {
+            DB::rollBack();
+            throw $e;
+        }
+    }
 }
