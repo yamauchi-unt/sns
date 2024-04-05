@@ -1,7 +1,8 @@
 <?php
 
-use App\Http\Controllers\PostController;
 use App\Http\Controllers\CommentController;
+use App\Http\Controllers\PostController;
+use App\Http\Controllers\UserController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -35,7 +36,7 @@ Route::get('/posts/{post_id}', [PostController::class, 'show'])
     ->whereNumber('post_id');
 
 // 投稿1件削除
-Route::delete ('/posts/{post_id}', [PostController::class, 'destroy'])
+Route::delete('/posts/{post_id}', [PostController::class, 'destroy'])
     ->whereNumber('post_id');
 
 // コメント取得
@@ -50,3 +51,7 @@ Route::post('/posts/{post_id}/comments', [CommentController::class, 'store'])
 // コメント削除
 Route::delete('/comments/{comment_id}', [CommentController::class, 'destroy'])
     ->whereNumber('comment_id');
+
+// ユーザ新規登録
+Route::post('/users', [UserController::class, 'register'])
+    ->middleware('ensure.json');
