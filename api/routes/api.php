@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AuthTokenController;
 use App\Http\Controllers\CommentController;
 use App\Http\Controllers\PostController;
 use App\Http\Controllers\UserController;
@@ -54,4 +55,9 @@ Route::delete('/comments/{comment_id}', [CommentController::class, 'destroy'])
 
 // ユーザ新規登録
 Route::post('/users', [UserController::class, 'register'])
+    ->middleware('ensure.json');
+
+
+// トークン取得
+Route::post('/auth/token', [AuthTokenController::class, 'store'])
     ->middleware('ensure.json');

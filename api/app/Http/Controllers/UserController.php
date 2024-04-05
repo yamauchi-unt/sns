@@ -8,7 +8,7 @@ use Illuminate\Http\Request;
 
 class UserController extends Controller
 {
-    //ユーザ新規登録
+    // ユーザ新規登録
     public function register(RegisterUserRequest $request)
     {
         $validated = $request->validated();
