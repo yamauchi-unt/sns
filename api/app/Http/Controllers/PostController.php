@@ -83,14 +83,12 @@ class PostController extends Controller
     // 投稿1件削除
     public function destroy($post_id)
     {
-        // 認証ユーザのユーザID取得
-        // $currentUserId = auth()->user()->id;
-        $currentUserId = 'test1';
+        $userId = Auth::user()->user_id;
 
         DB::beginTransaction();
 
         try {
-            $result = Post::deleteIfAuthorized($post_id, $currentUserId);
+            $result = Post::deleteIfAuthorized($post_id, $userId);
 
             switch ($result) {
                 case '204':
