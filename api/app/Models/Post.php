@@ -25,12 +25,11 @@ class Post extends Model
         'message',
     ];
 
-    // 投稿を登録
-    public static function store($validated)
+    // 投稿（登録）
+    public static function store(array $validated, string $userId)
     {
-        $post = Post::create([
-            // 'user_id' => auth()->user()->id,
-            'user_id' => 'test3',
+        $post = self::create([
+            'user_id' => $userId,
             'message' => $validated['message'],
         ]);
 

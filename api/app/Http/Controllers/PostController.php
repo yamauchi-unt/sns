@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StorePostRequest;
 use App\Models\Post;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 
@@ -15,12 +16,15 @@ class PostController extends Controller
     {
         // バリデーション済データ取得
         $validated = $request->validated();
+        // 認証ユーザのユーザID取得
+        $userId = Auth::user()->user_id;
 
         try {
             DB::beginTransaction();
 
             // 投稿テーブルへ登録
-            $post = Post::store($validated);
+            $post = Post::store($validated, $userId);
+
             // 画像ファイル名を変更しパス取得
             $imagePath = "images/{$post->id}.jpeg";
             // デコードされた画像データをストレージに保存

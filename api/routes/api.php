@@ -18,13 +18,9 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
-});
-
 // 投稿
-Route::post('/posts', [PostController::class, 'store'])
-    ->middleware('ensure.json');
+Route::middleware(['auth:sanctum', 'ensure.json'])
+    ->post('/posts', [PostController::class, 'store']);
 
 // 投稿取得
 Route::get('/posts', [PostController::class, 'index']);
