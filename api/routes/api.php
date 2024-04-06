@@ -57,6 +57,10 @@ Route::delete('/comments/{comment_id}', [CommentController::class, 'destroy'])
 Route::post('/users', [UserController::class, 'register'])
     ->middleware('ensure.json');
 
+// プロフィール取得
+Route::middleware('auth:sanctum')
+    ->get('/myprofile', [UserController::class, 'show']);
+
 
 // トークン取得
 Route::post('/auth/token', [AuthTokenController::class, 'store'])
