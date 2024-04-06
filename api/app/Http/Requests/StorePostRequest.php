@@ -47,7 +47,7 @@ class StorePostRequest extends FormRequest
             'decoded_image'=> [
                 'required',
                 new Base64MaxSize(5 * 1024 * 1024),
-                new Base64FileType(['image/jpeg']),
+                new Base64FileType('image/jpeg'),
             ],
             'message' => [
                 'required',

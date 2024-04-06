@@ -6,14 +6,14 @@ use Illuminate\Contracts\Validation\Rule;
 
 class Base64FileType implements Rule
 {
-    protected $allowedMimeTypes;
+    protected $allowedMimeType;
 
     /**
-     * @param array $allowedMimeTypes
+     * @param string $allowedMimeType
      */
-    public function __construct(array $allowedMimeTypes)
+    public function __construct(string $allowedMimeType)
     {
-        $this->allowedMimeTypes = $allowedMimeTypes;
+        $this->allowedMimeType = $allowedMimeType;
     }
 
     /**
@@ -30,7 +30,7 @@ class Base64FileType implements Rule
         $mimeType = finfo_buffer($finfo, $value);
         finfo_close($finfo);
 
-        return in_array($mimeType, $this->allowedMimeTypes);
+        return $mimeType === $this->allowedMimeType;
     }
 
     /**
@@ -40,18 +40,9 @@ class Base64FileType implements Rule
      */
     public function message()
     {
-        // MIMEタイプからファイル拡張子部分(例:"image/jpeg"から"jpeg")を抽出する関数
-        $extractExtension = function($mimeType) {
-            $parts = explode('/', $mimeType);
-            return $parts[1];
-        };
+        // MIMEタイプからファイル拡張子部分(例:"image/jpeg"から"jpeg")を抽出
+        $extension = explode('/', $this->allowedMimeType)[1];
 
-        // 抽出実行
-        $allowedExtensions = array_map($extractExtension, $this->allowedMimeTypes);
-
-        // 抽出したファイル形式を文字列として結合
-        $allowedExtensionsStr = implode(', ', $allowedExtensions);
-
-        return $allowedExtensionsStr. '形式の画像を選択してください。';
+        return $extension. '形式の画像を選択してください。';
     }
 }
