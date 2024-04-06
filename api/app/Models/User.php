@@ -55,4 +55,20 @@ class User extends Authenticatable
 
         return $user;
     }
+
+    // プロフィール編集
+    public function myprofileUpdate(array $validated)
+    {
+        // 'new_password'の存在チェック
+        if (!empty($validated['new_password'])) {
+            // 存在したらハッシュ化
+            $this->password = Hash::make($validated['new_password']);
+        } else {
+            // 存在しなかったらキーを除外
+            unset($validated['new_password']);
+        }
+
+        // 更新
+        $this->update($validated);
+    }
 }
