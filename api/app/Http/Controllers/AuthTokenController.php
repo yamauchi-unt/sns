@@ -23,4 +23,12 @@ class AuthTokenController extends Controller
             return response()->noContent(401);
         }
     }
+
+    // トークン削除
+    public function destroy(Request $request)
+    {
+        $request->user()->currentAccessToken()->delete();
+
+        return response()->noContent(204);
+    }
 }

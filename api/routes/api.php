@@ -61,3 +61,7 @@ Route::post('/users', [UserController::class, 'register'])
 // トークン取得
 Route::post('/auth/token', [AuthTokenController::class, 'store'])
     ->middleware('ensure.json');
+
+// トークン削除
+Route::middleware('auth:sanctum')
+    ->delete('/auth/token', [AuthTokenController::class, 'destroy']);
