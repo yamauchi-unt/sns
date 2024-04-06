@@ -23,7 +23,8 @@ Route::middleware(['auth:sanctum', 'ensure.json'])
     ->post('/posts', [PostController::class, 'store']);
 
 // 投稿取得
-Route::get('/posts', [PostController::class, 'index']);
+Route::middleware(['auth:sanctum'])
+    ->get('/posts', [PostController::class, 'index']);
 
 // 自分の投稿取得
 Route::get('/myposts', [PostController::class, 'indexMyPosts']);
