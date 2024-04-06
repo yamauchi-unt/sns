@@ -61,6 +61,9 @@ Route::post('/users', [UserController::class, 'register'])
 Route::middleware('auth:sanctum')
     ->get('/myprofile', [UserController::class, 'show']);
 
+// プロフィール編集
+Route::middleware(['auth:sanctum', 'ensure.json'])
+    ->patch('/myprofile', [UserController::class, 'update']);
 
 // トークン取得
 Route::post('/auth/token', [AuthTokenController::class, 'store'])
