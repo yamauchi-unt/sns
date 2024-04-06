@@ -45,14 +45,9 @@ class Post extends Model
     }
 
     // 自分の投稿取得
-    public static function indexMyPosts()
+    public static function indexMyPosts($userId)
     {
-        // $userId = auth()->id();
-        // $posts = Post::where('user_id', $userId)
-        //     ->orderBy('id', 'desc')
-        //     ->paginate(10);
-
-        $myposts = Post::where('user_id', 'test3')
+        $myposts = Post::where('user_id', $userId)
             ->orderBy('id','desc')
             ->paginate(10);
 

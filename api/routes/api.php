@@ -27,7 +27,8 @@ Route::middleware(['auth:sanctum'])
     ->get('/posts', [PostController::class, 'index']);
 
 // 自分の投稿取得
-Route::get('/myposts', [PostController::class, 'indexMyPosts']);
+Route::middleware(['auth:sanctum'])
+    ->get('/myposts', [PostController::class, 'indexMyPosts']);
 
 // 投稿1件取得
 Route::get('/posts/{post_id}', [PostController::class, 'show'])
