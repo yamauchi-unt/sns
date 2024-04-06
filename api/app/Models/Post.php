@@ -60,11 +60,7 @@ class Post extends Model
     {
         $post = Post::withCount('comments')->find($post_id);
 
-        if ($post) {
-            return $post;
-        } else {
-            return '404';
-        }
+        return $post;
     }
 
     // 投稿1件削除
