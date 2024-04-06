@@ -14,9 +14,7 @@ class PostController extends Controller
     //投稿
     public function store(StorePostRequest $request)
     {
-        // バリデーション済データ取得
         $validated = $request->validated();
-        // 認証ユーザのユーザID取得
         $userId = Auth::user()->user_id;
 
         try {
@@ -59,18 +57,18 @@ class PostController extends Controller
     // 投稿1件取得
     public function show($post_id)
     {
+        $userId = Auth::user()->user_id;
         $post = Post::show($post_id);
-        // $userId = auth()->id();
-        $userId = 'test1';
 
-        if($post === '404') {
+        // 投稿詳細が取得できなかった場合404
+        if($post === null) {
             return response()->noContent(404);
         }
 
-        // 自分の投稿か判定
-        $post->mine_frg = $post->user_id === $userId;
+        // 認証ユーザ自身の投稿か判定
+        $post->mine_frg = $userId === $post->user_id;
 
-        // 画像取得しエンコード
+        // 画像取得しBase64でエンコード
         $imagePath = "images/{$post->id}.jpeg";
         if(Storage::exists($imagePath)) {
             $imageData = Storage::get($imagePath);

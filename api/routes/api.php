@@ -31,7 +31,8 @@ Route::middleware(['auth:sanctum'])
     ->get('/myposts', [PostController::class, 'indexMyPosts']);
 
 // 投稿1件取得
-Route::get('/posts/{post_id}', [PostController::class, 'show'])
+Route::middleware(['auth:sanctum'])
+    ->get('/posts/{post_id}', [PostController::class, 'show'])
     ->whereNumber('post_id');
 
 // 投稿1件削除
