@@ -36,7 +36,7 @@ class UserController extends Controller
         $user = Auth::user();
         $validated = $request->safe()->only(['user_name', 'new_password']);
 
-        $user->myprofileUpdate($validated);
+        $user->updateMyprofile($validated);
 
         return response()->noContent(200);
     }

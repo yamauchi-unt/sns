@@ -56,18 +56,17 @@ class User extends Authenticatable
     }
 
     // プロフィール編集
-    public function myprofileUpdate(array $validated)
+    public function updateMyprofile(array $value)
     {
-        // 'new_password'の存在チェック
+        // 'new_password'の値があるか判定
         if (!empty($validated['new_password'])) {
             // 存在したらハッシュ化
-            $this->password = Hash::make($validated['new_password']);
+            $this->password = Hash::make($value['new_password']);
         } else {
             // 存在しなかったらキーを除外
-            unset($validated['new_password']);
+            unset($value['new_password']);
         }
 
-        // 更新
-        $this->update($validated);
+        $this->update($value);
     }
 }
