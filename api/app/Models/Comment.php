@@ -9,6 +9,12 @@ class Comment extends Model
 {
     use HasFactory;
 
+    // コメントに紐づくユーザのリレーション
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'user_id', 'user_id');
+    }
+
     /**
      * 複数代入可能な属性
      *
@@ -33,21 +39,25 @@ class Comment extends Model
     }
 
     // コメント取得
-    public static function index($post_id)
+    public static function index(string $post_id, string $user_id)
     {
-        $comments = Comment::where('post_id', $post_id)
+        $comments = self::with('user')
+            ->where('post_id', $post_id)
             ->orderBy('id','desc')
             ->paginate(10);
 
-        // 認証ユーザのユーザID取得
-        // $currentUserId = auth()->id();
-        $currentUserId = 'test1';
-
-        // 認証ユーザ自身のコメントか判定し、mine_flagキーを追加
-        $comments->getCollection()->transform(function ($comment) use ($currentUserId) {
-            $comment->mine_flag = $comment->user_id === $currentUserId;
-            return $comment;
+        $transformedComments = $comments->getCollection()->map(function ($comment) use ($user_id) {
+            return [
+                'comment_id' => $comment->id,
+                'post_id'    => $comment->post_id,
+                'mine_frg'   => $comment->user_id === $user_id,
+                'user_name'  => $comment->user->user_name,
+                'comment'    => $comment->comment,
+            ];
         });
+
+        // paginateのdata部分を上で作成した配列に置き換え
+        $comments->setCollection($transformedComments);
 
         return $comments;
     }
