@@ -40,14 +40,14 @@ Route::middleware(['auth:sanctum'])
     ->delete('/posts/{post_id}', [PostController::class, 'destroy'])
     ->whereNumber('post_id');
 
+// コメント送信
+Route::middleware(['auth:sanctum', 'ensure.json'])
+    ->post('/posts/{post_id}/comments', [CommentController::class, 'store'])
+    ->whereNumber('post_id');
+
 // コメント取得
 Route::get('/posts/{post_id}/comments', [CommentController::class, 'index'])
     ->whereNumber('post_id');
-
-// コメント送信
-Route::post('/posts/{post_id}/comments', [CommentController::class, 'store'])
-    ->whereNumber('post_id')
-    ->middleware('ensure.json');
 
 // コメント削除
 Route::delete('/comments/{comment_id}', [CommentController::class, 'destroy'])

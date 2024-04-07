@@ -2,29 +2,31 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\StoreCommentRequest;
-use Illuminate\Http\Request;
 use App\Http\Requests;
+use App\Http\Requests\StoreCommentRequest;
 use App\Models\Comment;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class CommentController extends Controller
 {
+    // コメント送信
+    public function store(StoreCommentRequest $request, $post_id)
+    {
+        $user_id = Auth::user()->user_id;
+        $validated = $request->validated();
+
+        $comment = Comment::store($post_id, $user_id, $validated);
+
+        return response()->json(['comment_id' => $comment->id], 201);
+    }
+
     // コメント取得
     public function index($post_id)
     {
         $comments = Comment::index($post_id);
 
         return response()->json($comments, 200);
-    }
-
-    // コメント送信
-    public function store(StoreCommentRequest $request, $post_id)
-    {
-        $validated = $request->validated();
-
-        $comment = Comment::store($validated, $post_id);
-
-        return response()->json(['comment_id' => $comment->id], 201);
     }
 
     // コメント削除

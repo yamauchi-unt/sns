@@ -20,6 +20,18 @@ class Comment extends Model
         'comment',
     ];
 
+    // コメント送信（登録）
+    public static function store(string $post_id, string $user_id, array $value)
+    {
+        $comment = self::create([
+            'post_id' => $post_id,
+            'user_id' => $user_id,
+            'comment' => $value['comment'],
+        ]);
+
+        return $comment;
+    }
+
     // コメント取得
     public static function index($post_id)
     {
@@ -38,19 +50,6 @@ class Comment extends Model
         });
 
         return $comments;
-    }
-
-    // コメント送信
-    public static function store($validated, $post_id)
-    {
-        $comment = Comment::create([
-            'post_id'=> $post_id,
-            // 'user_id' => auth()->user()->id,
-            'user_id' => 'test3',
-            'comment' => $validated['comment'],
-        ]);
-
-        return $comment;
     }
 
     // コメント削除
