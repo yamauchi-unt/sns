@@ -119,19 +119,29 @@ class Post extends Model
     }
 
     // 投稿1件削除
-    public static function deleteIfAuthorized($post_id, $userId)
+    public static function deleteWithImageIfAuthorized(string $postId, string $userId, ImageService $imageService)
     {
-        $post = Post::find($post_id);
+        $post = self::find($postId);
 
         if (!$post) {
             return '404';
         }
-        if ($userId !== $post->user_id) {
+        if ($post->user_id !== $userId) {
             return '403';
         }
 
-        $post->delete();
-        return '204';
+        DB::beginTransaction();
+        try {
+            $post->delete();
+            $imageService->deleteImage($postId);
+
+            DB::commit();
+            return '204';
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            throw $e;
+        }
     }
 
 }

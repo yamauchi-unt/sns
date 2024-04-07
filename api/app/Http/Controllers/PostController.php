@@ -57,35 +57,22 @@ class PostController extends Controller
     }
 
     // 投稿1件削除
-    public function destroy($post_id)
+    public function destroy($postId)
     {
         $userId = Auth::user()->user_id;
+        $imageService = app(ImageService::class);
 
-        DB::beginTransaction();
+        $result = Post::deleteWithImageIfAuthorized($postId, $userId, $imageService);
 
-        try {
-            $result = Post::deleteIfAuthorized($post_id, $userId);
+        switch ($result) {
+            case '204':
+                return response()->noContent(204);
 
-            switch ($result) {
-                case '204':
-                    $imagePath = "images/{$post_id}.jpeg";
-                    if (Storage::exists($imagePath)) {
-                        Storage::delete($imagePath);
-                    }
-                    DB::commit();
-                    return response()->noContent(204);
+            case '403':
+                return response()->noContent(403);
 
-                case '403':
-                    DB::rollBack();
-                    return response()->noContent(403);
-
-                case '404':
-                    DB::rollBack();
-                    return response()->noContent(404);
-                }
-        } catch (\Exception $e) {
-            DB::rollBack();
-            throw $e;
+            case '404':
+                return response()->noContent(404);
         }
     }
 }
