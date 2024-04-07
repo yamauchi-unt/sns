@@ -46,7 +46,8 @@ Route::middleware(['auth:sanctum', 'ensure.json'])
     ->whereNumber('post_id');
 
 // コメント取得
-Route::get('/posts/{post_id}/comments', [CommentController::class, 'index'])
+Route::middleware(['auth:sanctum'])
+    ->get('/posts/{post_id}/comments', [CommentController::class, 'index'])
     ->whereNumber('post_id');
 
 // コメント削除

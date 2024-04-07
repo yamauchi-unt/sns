@@ -24,7 +24,8 @@ class CommentController extends Controller
     // コメント取得
     public function index($post_id)
     {
-        $comments = Comment::index($post_id);
+        $user_id = Auth::user()->user_id;
+        $comments = Comment::index($post_id, $user_id);
 
         return response()->json($comments, 200);
     }
