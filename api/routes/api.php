@@ -72,5 +72,5 @@ Route::middleware(['ensure.json'])
     ->post('/auth/token', [AuthTokenController::class, 'store']);
 
 // トークン削除
-Route::middleware('auth:sanctum')
+Route::middleware(['auth:sanctum'])
     ->delete('/auth/token', [AuthTokenController::class, 'destroy']);
