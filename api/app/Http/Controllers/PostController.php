@@ -33,10 +33,10 @@ class PostController extends Controller
     }
 
     // 自分の投稿取得
-    public function indexMyPosts()
+    public function indexMyposts()
     {
         $userId = Auth::user()->user_id;
-        $myposts = Post::indexMyPosts($userId);
+        $myposts = Post::indexMyposts($userId);
 
         return response()->json($myposts, 200);
     }

@@ -56,24 +56,34 @@ class Post extends Model
         $posts = Post::orderBy('id','desc')->paginate(10);
 
         // paginateのdata部分のデータ構造を書き換え
-        $transformedComments = $posts->getCollection()->map(function ($post) {
+        $transformedPosts = $posts->getCollection()->map(function ($post) {
             return [
                 'id'=> $post->id,
             ];
         });
 
         // 書き換え実行
-        $posts->setCollection($transformedComments);
+        $posts->setCollection($transformedPosts);
 
         return $posts;
     }
 
     // 自分の投稿取得
-    public static function indexMyPosts($userId)
+    public static function indexMyposts($userId)
     {
         $myposts = Post::where('user_id', $userId)
             ->orderBy('id','desc')
             ->paginate(10);
+
+        // paginateのdata部分のデータ構造を書き換え
+        $transformedMyposts = $myposts->getCollection()->map(function ($mypost) {
+            return [
+                'id'=> $mypost->id,
+            ];
+        });
+
+        // 書き換え実行
+        $myposts->setCollection($transformedMyposts);
 
         return $myposts;
     }
