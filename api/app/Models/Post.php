@@ -11,6 +11,12 @@ class Post extends Model
 {
     use HasFactory;
 
+    // 投稿に紐づくユーザのリレーション
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'user_id', 'user_id');
+    }
+
     // 投稿に紐づくコメントのリレーション
     public function comments()
     {
@@ -53,7 +59,7 @@ class Post extends Model
     // 投稿取得
     public static function index()
     {
-        $posts = Post::orderBy('id','desc')->paginate(10);
+        $posts = self::orderBy('id','desc')->paginate(10);
 
         // paginateのdata部分のデータ構造を書き換え
         $transformedPosts = $posts->getCollection()->map(function ($post) {
@@ -69,9 +75,9 @@ class Post extends Model
     }
 
     // 自分の投稿取得
-    public static function indexMyposts($userId)
+    public static function indexMyposts(string $userId)
     {
-        $myposts = Post::where('user_id', $userId)
+        $myposts = self::where('user_id', $userId)
             ->orderBy('id','desc')
             ->paginate(10);
 
@@ -90,11 +96,26 @@ class Post extends Model
 
 
     // 投稿1件取得
-    public static function show($post_id)
+    public static function showWithImage(string $postId, string $userId, ImageService $imageService)
     {
-        $post = Post::withCount('comments')->find($post_id);
+        $post = self::withCount('comments')->find($postId);
 
-        return $post;
+        if (!$post) {
+            return null;
+        }
+
+        // データ構造を書き換え
+        $transformedPost = [
+                'post_id' => $post->id,
+                'mine_frg' => $post->user_id === $userId,
+                'user_name' => $post->user->user_name,
+                'image' => $imageService->getEncodedImage($post->id),
+                'message' => $post->message,
+                'post_date' => $post->created_at->toDateTimeString(),
+                'comment_count' => $post->comments_count,
+            ];
+
+        return $transformedPost;
     }
 
     // 投稿1件削除
