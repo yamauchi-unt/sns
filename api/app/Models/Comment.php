@@ -39,24 +39,25 @@ class Comment extends Model
     }
 
     // コメント取得
-    public static function index(string $post_id, string $user_id)
+    public static function index(string $postId, string $userId)
     {
         $comments = self::with('user')
-            ->where('post_id', $post_id)
+            ->where('post_id', $postId)
             ->orderBy('id','desc')
             ->paginate(10);
 
-        $transformedComments = $comments->getCollection()->map(function ($comment) use ($user_id) {
+        // paginateのdata部分のデータ構造を書き換え
+        $transformedComments = $comments->getCollection()->map(function ($comment) use ($userId) {
             return [
                 'comment_id' => $comment->id,
                 'post_id'    => $comment->post_id,
-                'mine_frg'   => $comment->user_id === $user_id,
+                'mine_frg'   => $comment->user_id === $userId,
                 'user_name'  => $comment->user->user_name,
                 'comment'    => $comment->comment,
             ];
         });
 
-        // paginateのdata部分を上で作成した配列に置き換え
+        // 書き換え実行
         $comments->setCollection($transformedComments);
 
         return $comments;

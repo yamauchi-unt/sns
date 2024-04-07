@@ -22,10 +22,10 @@ class CommentController extends Controller
     }
 
     // コメント取得
-    public function index($post_id)
+    public function index($postId)
     {
-        $user_id = Auth::user()->user_id;
-        $comments = Comment::index($post_id, $user_id);
+        $userId = Auth::user()->user_id;
+        $comments = Comment::index($postId, $userId);
 
         return response()->json($comments, 200);
     }
