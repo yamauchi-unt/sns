@@ -68,8 +68,8 @@ Route::middleware(['auth:sanctum', 'ensure.json'])
     ->patch('/myprofile', [UserController::class, 'update']);
 
 // トークン取得
-Route::post('/auth/token', [AuthTokenController::class, 'store'])
-    ->middleware('ensure.json');
+Route::middleware(['ensure.json'])
+    ->post('/auth/token', [AuthTokenController::class, 'store']);
 
 // トークン削除
 Route::middleware('auth:sanctum')
