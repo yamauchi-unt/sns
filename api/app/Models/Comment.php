@@ -63,15 +63,15 @@ class Comment extends Model
         return $comments;
     }
 
-    // コメント削除
-    public static function deleteIfAuthorized(string $comment_id, string $user_id)
+    // コメント1件削除
+    public static function deleteIfAuthorized(string $commentId, string $userId)
     {
-        $comment = Comment::find($comment_id);
+        $comment = self::find($commentId);
 
         if (!$comment) {
             return '404';
         }
-        if ($comment->user_id !== $user_id) {
+        if ($comment->user_id !== $userId) {
             return '403';
         }
 

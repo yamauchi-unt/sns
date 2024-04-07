@@ -50,7 +50,7 @@ Route::middleware(['auth:sanctum'])
     ->get('/posts/{post_id}/comments', [CommentController::class, 'index'])
     ->whereNumber('post_id');
 
-// コメント削除
+// コメント1件削除
 Route::middleware(['auth:sanctum'])
     ->delete('/comments/{comment_id}', [CommentController::class, 'destroy'])
     ->whereNumber('comment_id');

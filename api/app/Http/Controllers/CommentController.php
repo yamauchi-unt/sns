@@ -30,11 +30,11 @@ class CommentController extends Controller
         return response()->json($comments, 200);
     }
 
-    // コメント削除
-    public function destroy($comment_id)
+    // コメント1件削除
+    public function destroy($commentId)
     {
-        $user_id = Auth::user()->user_id;
-        $result = Comment::deleteIfAuthorized($comment_id, $user_id);
+        $userId = Auth::user()->user_id;
+        $result = Comment::deleteIfAuthorized($commentId, $userId);
 
         switch ($result) {
             case '204':
