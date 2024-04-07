@@ -42,26 +42,15 @@ class PostController extends Controller
     }
 
     // 投稿1件取得
-    public function show($post_id)
+    public function show($postId)
     {
         $userId = Auth::user()->user_id;
-        $post = Post::show($post_id);
+        $imageService = app(ImageService::class);
+        $post = Post::showWithImage($postId, $userId, $imageService);
 
         // 投稿詳細が取得できなかった場合404
         if($post === null) {
             return response()->noContent(404);
-        }
-
-        // 認証ユーザ自身の投稿か判定
-        $post->mine_frg = $userId === $post->user_id;
-
-        // 画像取得しBase64でエンコード
-        $imagePath = "images/{$post->id}.jpeg";
-        if(Storage::exists($imagePath)) {
-            $imageData = Storage::get($imagePath);
-            $post->image = base64_encode($imageData);
-        } else {
-            $post->image = null;
         }
 
         return response()->json($post, 200);
