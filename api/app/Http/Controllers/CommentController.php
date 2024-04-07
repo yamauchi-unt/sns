@@ -33,20 +33,16 @@ class CommentController extends Controller
     // コメント削除
     public function destroy($comment_id)
     {
-        // 認証ユーザのユーザID取得
-        // $currentUserId = auth()->id();
-        $currentUserId = 'test1';
-        $result = Comment::deleteIfAuthorized($comment_id, $currentUserId);
+        $user_id = Auth::user()->user_id;
+        $result = Comment::deleteIfAuthorized($comment_id, $user_id);
 
         switch ($result) {
             case '204':
                 return response()->noContent(204);
-
-            case '404':
-                return response()->noContent(404);
-
             case '403':
                 return response()->noContent(403);
+            case '404':
+                return response()->noContent(404);
         }
     }
 }

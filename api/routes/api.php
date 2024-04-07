@@ -51,7 +51,8 @@ Route::middleware(['auth:sanctum'])
     ->whereNumber('post_id');
 
 // コメント削除
-Route::delete('/comments/{comment_id}', [CommentController::class, 'destroy'])
+Route::middleware(['auth:sanctum'])
+    ->delete('/comments/{comment_id}', [CommentController::class, 'destroy'])
     ->whereNumber('comment_id');
 
 // ユーザ新規登録
