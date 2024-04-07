@@ -60,7 +60,7 @@ Route::middleware(['ensure.json'])
     ->post('/users', [UserController::class, 'register']);
 
 // プロフィール取得
-Route::middleware('auth:sanctum')
+Route::middleware(['auth:sanctum'])
     ->get('/myprofile', [UserController::class, 'show']);
 
 // プロフィール編集

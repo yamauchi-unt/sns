@@ -20,13 +20,13 @@ class UserController extends Controller
     }
 
     // プロフィール取得
-    public function show(Request $request)
+    public function show()
     {
-        $user = $request->user();
+        $user = Auth::user();
 
         return response()->json([
-            'user_id' => $user->user_id,
-            'user_name'=> $user->user_name,
+            "user_id" => $user->user_id,
+            "user_name" => $user->user_name,
         ], 200);
     }
 
