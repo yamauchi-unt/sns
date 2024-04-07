@@ -55,6 +55,16 @@ class Post extends Model
     {
         $posts = Post::orderBy('id','desc')->paginate(10);
 
+        // paginateのdata部分のデータ構造を書き換え
+        $transformedComments = $posts->getCollection()->map(function ($post) {
+            return [
+                'id'=> $post->id,
+            ];
+        });
+
+        // 書き換え実行
+        $posts->setCollection($transformedComments);
+
         return $posts;
     }
 
