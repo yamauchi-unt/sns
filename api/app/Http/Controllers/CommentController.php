@@ -11,12 +11,12 @@ use Illuminate\Support\Facades\Auth;
 class CommentController extends Controller
 {
     // コメント送信
-    public function store(StoreCommentRequest $request, $post_id)
+    public function store(StoreCommentRequest $request, $postId)
     {
-        $user_id = Auth::user()->user_id;
+        $userId = Auth::user()->user_id;
         $validated = $request->validated();
 
-        $comment = Comment::store($post_id, $user_id, $validated);
+        $comment = Comment::store($postId, $userId, $validated);
 
         return response()->json(['comment_id' => $comment->id], 201);
     }
