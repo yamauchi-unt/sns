@@ -38,7 +38,7 @@ class StoreCommentRequest extends FormRequest
     {
         return [
             'comment.required' => ':attributeを入力してください。',
-            'comment.max'=> ':attributeは255文字以内で入力してください。',
+            'max'=> ':attributeは:max文字以内で入力してください。',
         ];
     }
 
