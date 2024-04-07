@@ -40,17 +40,16 @@ class User extends Authenticatable
      * @var array<string, string>
      */
     protected $casts = [
-        'email_verified_at' => 'datetime',
         'password' => 'hashed',
     ];
 
     // ユーザ新規登録
-    public static function register($validated)
+    public static function register(array $value)
     {
-        $user = User::create([
-            'user_id' => $validated['user_id'],
-            'user_name' => $validated['user_name'],
-            'password' => Hash::make($validated['password']),
+        $user = self::create([
+            'user_id' => $value['user_id'],
+            'user_name' => $value['user_name'],
+            'password' => Hash::make($value['password']),
         ]);
 
         return $user;

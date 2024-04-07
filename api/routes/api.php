@@ -56,8 +56,8 @@ Route::middleware(['auth:sanctum'])
     ->whereNumber('comment_id');
 
 // ユーザ新規登録
-Route::post('/users', [UserController::class, 'register'])
-    ->middleware('ensure.json');
+Route::middleware(['ensure.json'])
+    ->post('/users', [UserController::class, 'register']);
 
 // プロフィール取得
 Route::middleware('auth:sanctum')
