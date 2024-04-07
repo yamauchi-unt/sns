@@ -2,8 +2,10 @@
 
 namespace App\Models;
 
+use App\Services\ImageService;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\DB;
 
 class Post extends Model
 {
@@ -26,14 +28,26 @@ class Post extends Model
     ];
 
     // 投稿（登録）
-    public static function store(array $validated, string $userId)
+    public static function storeWithImage(string $userId, array $value, ImageService $imageService)
     {
-        $post = self::create([
-            'user_id' => $userId,
-            'message' => $validated['message'],
-        ]);
+        DB::beginTransaction();
+        try {
+            // 投稿テーブルへ登録
+            $post = self::create([
+                'user_id' => $userId,
+                'message' => $value['message'],
+            ]);
 
-        return $post;
+            // 画像を保存
+            $imageService->saveImage($post->id, $value['image']);
+
+            DB::commit();
+            return $post;
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            throw $e;
+        }
     }
 
     // 投稿取得

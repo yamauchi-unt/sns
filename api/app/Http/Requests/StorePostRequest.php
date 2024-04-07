@@ -2,8 +2,9 @@
 
 namespace App\Http\Requests;
 
-use App\Rules\Base64FileType;
-use App\Rules\Base64MaxSize;
+use App\Rules\ImageFileType;
+use App\Rules\ImageMaxSize;
+use App\Services\ImageService;
 use Illuminate\Foundation\Http\FormRequest;
 
 class StorePostRequest extends FormRequest
@@ -18,20 +19,17 @@ class StorePostRequest extends FormRequest
 
     /**
      * バリデーション前準備
-     *
-     * Base64エンコードされたimageをデコードし、新しいフィールドdecoded_imageとしてリクエストへ追加
-     */
+     * imageをデコード
+     **/
     protected function prepareForValidation()
     {
         if ($this->has('image')) {
-            $encodeImage = $this->input('image');
+            $encodedImage = $this->input('image');
 
-            $pattern = '/^data:image\/[a-zA-Z]+;base64,/';
-            $pureBase64Data = preg_replace($pattern, '', $encodeImage);
-            $decodedImage = base64_decode($pureBase64Data);
+            $decodedImage = ImageService::decodeBase64($encodedImage);
 
             $this->merge([
-                'decoded_image' => $decodedImage,
+                'image' => $decodedImage,
             ]);
         }
     }
@@ -44,10 +42,10 @@ class StorePostRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'decoded_image'=> [
+            'image'=> [
                 'required',
-                new Base64MaxSize(5 * 1024 * 1024),
-                new Base64FileType('image/jpeg'),
+                new ImageMaxSize(env('IMAGE_MAX_SIZE', '5242880')),
+                new ImageFileType(env('IMAGE_ALLOWED_MIME_TYPE', 'image/jpeg')),
             ],
             'message' => [
                 'required',
@@ -64,7 +62,7 @@ class StorePostRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'decoded_image.required' => ':attributeを選択してください。',
+            'image.required' => ':attributeを選択してください。',
             'message.required' => ':attributeを入力してください。',
         ];
     }
@@ -77,7 +75,7 @@ class StorePostRequest extends FormRequest
     public function attributes(): array
     {
         return [
-            'decoded_image' => '画像',
+            'image' => '画像',
             'message' => '本文',
         ];
     }

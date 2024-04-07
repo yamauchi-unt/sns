@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\StorePostRequest;
 use App\Models\Post;
+use App\Services\ImageService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -14,25 +15,11 @@ class PostController extends Controller
     //投稿
     public function store(StorePostRequest $request)
     {
-        $validated = $request->validated();
         $userId = Auth::user()->user_id;
+        $validated = $request->validated();
+        $imageService = app(ImageService::class);
 
-        try {
-            DB::beginTransaction();
-
-            // 投稿テーブルへ登録
-            $post = Post::store($validated, $userId);
-
-            // 画像ファイル名を変更しパス取得
-            $imagePath = "images/{$post->id}.jpeg";
-            // デコードされた画像データをストレージに保存
-            Storage::put($imagePath, $validated['decoded_image']);
-
-            DB::commit();
-        } catch (\Exception $e) {
-            DB::rollBack();
-            throw $e;
-        }
+        $post = Post::storeWithImage($userId, $validated, $imageService);
 
         return response()->json(['post_id' => $post->id], 201);
     }
