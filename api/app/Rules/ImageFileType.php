@@ -4,7 +4,7 @@ namespace App\Rules;
 
 use Illuminate\Contracts\Validation\Rule;
 
-class Base64FileType implements Rule
+class ImageFileType implements Rule
 {
     protected $allowedMimeType;
 

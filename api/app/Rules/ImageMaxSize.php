@@ -4,7 +4,7 @@ namespace App\Rules;
 
 use Illuminate\Contracts\Validation\Rule;
 
-class Base64MaxSize implements Rule
+class ImageMaxSize implements Rule
 {
     protected $maxSize;
 
