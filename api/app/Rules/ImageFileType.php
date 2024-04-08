@@ -40,8 +40,8 @@ class ImageFileType implements Rule
      */
     public function message()
     {
-        // MIMEタイプからファイル拡張子部分(例:"image/jpeg"から"jpeg")を抽出
-        $extension = explode('/', $this->allowedMimeType)[1];
+        // MIMEタイプからファイル拡張子部分(例:"image/jpeg"から"jpeg")を抽出し大文字にする
+        $extension = strtoupper(explode('/', $this->allowedMimeType)[1]);
 
         return $extension. '形式の画像を選択してください。';
     }

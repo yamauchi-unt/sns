@@ -49,35 +49,7 @@ class StorePostRequest extends FormRequest
             ],
             'message' => [
                 'required',
-                'string',
             ],
         ];
     }
-
-    /**
-     * エラーメッセージのカスタマイズ
-     *
-     * @return array<string, string>
-     */
-    public function messages(): array
-    {
-        return [
-            'image.required' => ':attributeを選択してください。',
-            'message.required' => ':attributeを入力してください。',
-        ];
-    }
-
-    /**
-     * バリデーション属性のカスタマイズ
-     *
-     * @return array<string, string>
-     */
-    public function attributes(): array
-    {
-        return [
-            'image' => '画像',
-            'message' => '本文',
-        ];
-    }
-
 }

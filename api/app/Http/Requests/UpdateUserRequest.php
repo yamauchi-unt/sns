@@ -41,34 +41,4 @@ class UpdateUserRequest extends FormRequest
             ],
         ];
     }
-
-    /**
-     * エラーメッセージのカスタマイズ
-     *
-     * @return array<string, string>
-     */
-    public function messages(): array
-    {
-        return [
-            'required' => ':attributeを入力してください。',
-            'required_with' => ':attributeを入力してください。',
-            'max' => ':attributeは:max以内で入力してください。',
-            'current_password' => ':attributeを正しく入力してください。',
-            'new_password.regex' => ':attributeは半角英数字8文字以上で入力してください。',
-        ];
-    }
-
-    /**
-     * バリデーション属性のカスタマイズ
-     *
-     * @return array<string, string>
-     */
-    public function attributes(): array
-    {
-        return [
-            'user_name' => 'ユーザ名',
-            'current_password' => '現在のパスワード',
-            'new_password' => '新しいパスワード',
-        ];
-    }
 }

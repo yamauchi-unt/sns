@@ -26,29 +26,4 @@ class LoginRequest extends FormRequest
             'password'=> ['required',],
         ];
     }
-
-    /**
-     * エラーメッセージのカスタマイズ
-     *
-     * @return array<string, string>
-     */
-    public function messages(): array
-    {
-        return [
-            'required' => ':attributeを入力してください。',
-        ];
-    }
-
-    /**
-     * バリデーション属性のカスタマイズ
-     *
-     * @return array<string, string>
-     */
-    public function attributes(): array
-    {
-        return [
-            'user_id' => 'ユーザID',
-            'password'=> 'パスワード',
-        ];
-    }
 }

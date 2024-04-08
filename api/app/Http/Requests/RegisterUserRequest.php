@@ -42,34 +42,4 @@ class RegisterUserRequest extends FormRequest
             ],
         ];
     }
-
-    /**
-     * エラーメッセージのカスタマイズ
-     *
-     * @return array<string, string>
-     */
-    public function messages(): array
-    {
-        return [
-            'required' => ':attributeを入力してください。',
-            'max' => ':attributeは:max以内で入力してください。',
-            'user_id.unique' => '既に登録されています。異なる:attributeを入力してください。',
-            'user_id.regex' => ':attributeは半角英数字_(ｱﾝﾀﾞｰｽｺｱ)のみで入力してください。',
-            'password.regex' => ':attributeは半角英数字8文字以上で入力してください。',
-        ];
-    }
-
-    /**
-     * バリデーション属性のカスタマイズ
-     *
-     * @return array<string, string>
-     */
-    public function attributes(): array
-    {
-        return [
-            'user_id' => 'ユーザID',
-            'user_name' => 'ユーザ名',
-            'password'=> 'パスワード',
-        ];
-    }
 }

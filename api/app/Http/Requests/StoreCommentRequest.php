@@ -28,29 +28,4 @@ class StoreCommentRequest extends FormRequest
             ],
         ];
     }
-
-    /**
-     * エラーメッセージのカスタマイズ
-     *
-     * @return array<string, string>
-     */
-    public function messages(): array
-    {
-        return [
-            'comment.required' => ':attributeを入力してください。',
-            'max'=> ':attributeは:max文字以内で入力してください。',
-        ];
-    }
-
-    /**
-     * バリデーション属性のカスタマイズ
-     *
-     * @return array<string, string>
-     */
-    public function attributes(): array
-    {
-        return [
-            'comment' => 'コメント',
-        ];
-    }
 }
