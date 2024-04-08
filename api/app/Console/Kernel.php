@@ -12,7 +12,8 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule): void
     {
-        // $schedule->command('inspire')->hourly();
+        // 24時間以上有効期限が切れているトークンのレコードを削除（毎日2:00に実行）
+        $schedule->command('sanctum:prune-expired --hours=24')->dailyAt('2:00');
     }
 
     /**
