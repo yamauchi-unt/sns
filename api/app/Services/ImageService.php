@@ -29,8 +29,12 @@ class ImageService
     }
 
     // Base64エンコードされた画像データをデコードする
-    public static function decodeBase64(string $encodedImageData): string
+    public static function decodeBase64($encodedImageData)
     {
+        if (is_null($encodedImageData)) {
+            return null;
+        }
+
         $pattern = '/^data:image\/[a-zA-Z]+;base64,/';
         $pureBase64Data = preg_replace($pattern, '', $encodedImageData);
 
