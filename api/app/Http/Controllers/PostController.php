@@ -42,16 +42,13 @@ class PostController extends Controller
     }
 
     // 投稿1件取得
-    public function show($postId)
+    public function show(Post $post)
     {
         $userId = Auth::user()->user_id;
         $imageService = app(ImageService::class);
-        $post = Post::showWithImage($postId, $userId, $imageService);
 
-        // 投稿詳細が取得できなかった場合404
-        if($post === null) {
-            return response()->noContent(404);
-        }
+        // 投稿1件取得
+        $post = Post::showWithImage($post->id, $userId, $imageService);
 
         return response()->json($post, 200);
     }

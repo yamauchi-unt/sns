@@ -100,10 +100,6 @@ class Post extends Model
     {
         $post = self::withCount('comments')->find($postId);
 
-        if (!$post) {
-            return null;
-        }
-
         // データ構造を書き換え
         $transformedPost = [
                 'post_id' => $post->id,

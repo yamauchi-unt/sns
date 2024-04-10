@@ -32,8 +32,8 @@ Route::middleware(['auth:sanctum'])
 
 // 投稿1件取得
 Route::middleware(['auth:sanctum'])
-    ->get('/posts/{post_id}', [PostController::class, 'show'])
-    ->whereNumber('post_id');
+    ->get('/posts/{post}', [PostController::class, 'show'])
+    ->whereNumber('post');
 
 // 投稿1件削除
 Route::middleware(['auth:sanctum'])
