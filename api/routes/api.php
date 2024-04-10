@@ -37,7 +37,7 @@ Route::middleware(['auth:sanctum'])
 
 // 投稿1件削除
 Route::middleware(['auth:sanctum'])
-    ->delete('/posts/{post_id}', [PostController::class, 'destroy'])
+    ->delete('/posts/{post}', [PostController::class, 'destroy'])
     ->whereNumber('post_id');
 
 // コメント送信

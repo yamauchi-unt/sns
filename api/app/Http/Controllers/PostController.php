@@ -57,22 +57,16 @@ class PostController extends Controller
     }
 
     // 投稿1件削除
-    public function destroy($postId)
+    public function destroy(Post $post)
     {
-        $userId = Auth::user()->user_id;
         $imageService = app(ImageService::class);
 
-        $result = Post::deleteWithImageIfAuthorized($postId, $userId, $imageService);
+        // 削除権限があるかチェック、権限なければ403
+        $this->authorize('delete', $post);
 
-        switch ($result) {
-            case '204':
-                return response()->noContent(204);
+        // 投稿・画像削除
+        Post::deleteWithImage($post->id, $imageService);
 
-            case '403':
-                return response()->noContent(403);
-
-            case '404':
-                return response()->noContent(404);
-        }
+        return response()->noContent(204);
     }
 }
