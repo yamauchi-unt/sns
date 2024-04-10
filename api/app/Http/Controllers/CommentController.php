@@ -23,10 +23,11 @@ class CommentController extends Controller
     }
 
     // コメント取得
-    public function index($postId)
+    public function index(Post $post)
     {
         $userId = Auth::user()->user_id;
-        $comments = Comment::index($postId, $userId);
+
+        $comments = Comment::index($post->id, $userId);
 
         return response()->json($comments, 200);
     }
@@ -37,7 +38,6 @@ class CommentController extends Controller
         // 削除権限があるかチェック、権限なければ403
         $this->authorize('delete', $comment);
 
-        // コメント削除
         $comment->delete();
 
         return response()->noContent(204);
