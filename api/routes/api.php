@@ -38,7 +38,7 @@ Route::middleware(['auth:sanctum'])
 // 投稿1件削除
 Route::middleware(['auth:sanctum'])
     ->delete('/posts/{post}', [PostController::class, 'destroy'])
-    ->whereNumber('post_id');
+    ->whereNumber('post');
 
 // コメント送信
 Route::middleware(['auth:sanctum', 'ensure.json'])
@@ -52,8 +52,8 @@ Route::middleware(['auth:sanctum'])
 
 // コメント1件削除
 Route::middleware(['auth:sanctum'])
-    ->delete('/comments/{comment_id}', [CommentController::class, 'destroy'])
-    ->whereNumber('comment_id');
+    ->delete('/comments/{comment}', [CommentController::class, 'destroy'])
+    ->whereNumber('comment');
 
 // ユーザ新規登録
 Route::middleware(['ensure.json'])
