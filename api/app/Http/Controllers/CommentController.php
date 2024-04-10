@@ -5,18 +5,19 @@ namespace App\Http\Controllers;
 use App\Http\Requests;
 use App\Http\Requests\StoreCommentRequest;
 use App\Models\Comment;
+use App\Models\Post;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class CommentController extends Controller
 {
     // コメント送信
-    public function store(StoreCommentRequest $request, $postId)
+    public function store(StoreCommentRequest $request, Post $post)
     {
         $userId = Auth::user()->user_id;
         $validated = $request->validated();
 
-        $comment = Comment::store($postId, $userId, $validated);
+        $comment = Comment::store($post->id, $userId, $validated);
 
         return response()->json(['comment_id' => $comment->id], 201);
     }

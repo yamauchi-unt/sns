@@ -42,8 +42,8 @@ Route::middleware(['auth:sanctum'])
 
 // コメント送信
 Route::middleware(['auth:sanctum', 'ensure.json'])
-    ->post('/posts/{post_id}/comments', [CommentController::class, 'store'])
-    ->whereNumber('post_id');
+    ->post('/posts/{post}/comments', [CommentController::class, 'store'])
+    ->whereNumber('post');
 
 // コメント取得
 Route::middleware(['auth:sanctum'])
