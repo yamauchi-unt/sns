@@ -13,13 +13,20 @@ class UserRegisterTest extends TestCase
 {
     use RefreshDatabase;
 
+    // 有効なユーザデータ
+    protected $userData = [
+        'user_id'   => 'Test_User',
+        'user_name' => 'Test User',
+        'password'  => 'password',
+    ];
+
     // 有効なデータで登録成功
     public function test_register_with_valid_data_return_201(): void
     {
         // Arrange
         $userData = $this->userData;
         // Act
-        $response = $this->json('POST', '/api/users', $userData, ['Content-Type' => 'application/json']);
+        $response = $this->json('POST', '/api/users', $userData);
         $user = User::where('user_id', $userData['user_id'])->first();
         // Assert
         $response->assertStatus(201);
@@ -57,7 +64,7 @@ class UserRegisterTest extends TestCase
     public function test_register_with_json_contenttype_and_xml_requestbody_return_400(): void
     {
         // Arrange
-        $xmlData = '<?xml version="1.0" encoding="UTF-8"?><user><user_id>testUser</user_id><user_name>Test User</user_name><password>password</password></user>';
+        $xmlData = '<?xml version="1.0" encoding="UTF-8"?><user><user_id>Test_User</user_id><user_name>Test User</user_name><password>password</password></user>';
         // Act
         $response = $this->call('POST', '/api/users', [], [], [], ['CONTENT_TYPE' => 'application/json'], $xmlData);
         // Assert
@@ -105,7 +112,7 @@ class UserRegisterTest extends TestCase
             'password'  => 99,
         ];
         // Act
-        $response = $this->json('POST', '/api/users', $userData, ['Content-Type' => 'application/json']);
+        $response = $this->json('POST', '/api/users', $userData);
         // Assert
         $response->assertStatus(400);
         $this->assertCount(0, User::all());
@@ -116,12 +123,12 @@ class UserRegisterTest extends TestCase
     {
         // Arrange
         $userData = [
-            'user_id'   => ['InvalidUser'],
-            'user_name' => ['Invalid User'],
+            'user_id'   => ['Test_User'],
+            'user_name' => ['Test User'],
             'password'  => ['password'],
         ];
         // Act
-        $response = $this->json('POST', '/api/users', $userData, ['Content-Type' => 'application/json']);
+        $response = $this->json('POST', '/api/users', $userData);
         // Assert
         $response->assertStatus(400);
         $this->assertCount(0, User::all());
@@ -137,7 +144,7 @@ class UserRegisterTest extends TestCase
             'password'  => '',
         ];
         // Act
-        $response = $this->json('POST', '/api/users', $userData, ['Content-Type' => 'application/json']);
+        $response = $this->json('POST', '/api/users', $userData);
         // Assert
         $response->assertStatus(422)
                  ->assertJsonValidationErrors([
@@ -153,12 +160,12 @@ class UserRegisterTest extends TestCase
     {
         // Arrange
         $userData = [
-            ''   => 'ValidUser',
-            '' => 'Valid User',
-            ''  => 'password',
+            '' => 'Test_User',
+            '' => 'Test User',
+            '' => 'password',
         ];
         // Act
-        $response = $this->json('POST', '/api/users', $userData, ['Content-Type' => 'application/json']);
+        $response = $this->json('POST', '/api/users', $userData);
         // Assert
         $response->assertStatus(422)
                  ->assertJsonValidationErrors([
@@ -179,7 +186,7 @@ class UserRegisterTest extends TestCase
             'password'  => null,
         ];
         // Act
-        $response = $this->json('POST', '/api/users', $userData, ['Content-Type' => 'application/json']);
+        $response = $this->json('POST', '/api/users', $userData);
         // Assert
         $response->assertStatus(422)
                  ->assertJsonValidationErrors([
@@ -195,12 +202,12 @@ class UserRegisterTest extends TestCase
     {
         // Arrange
         $userData = [
-            'user_id'   => 'Valid_User01234567890123456789',
-            'user_name' => 'Valid User01234567890123456789',
+            'user_id'   => 'Test_User123456789012345678901',
+            'user_name' => 'Test User123456789012345678901',
             'password'  => 'Password1',
         ];
         // Act
-        $response = $this->json('POST', '/api/users', $userData, ['Content-Type' => 'application/json']);
+        $response = $this->json('POST', '/api/users', $userData);
         $user = User::where('user_id', $userData['user_id'])->first();
         // Assert
         $response->assertStatus(201);
@@ -214,12 +221,12 @@ class UserRegisterTest extends TestCase
     {
         // Arrange
         $userData = [
-            'user_id'   => 'Invalid_User0123456789012345678',
-            'user_name' => 'Invalid User0123456789012345678',
+            'user_id'   => 'Test_User1234567890123456789012',
+            'user_name' => 'Test User1234567890123456789012',
             'password'  => 'Password1',
         ];
         // Act
-        $response = $this->json('POST', '/api/users', $userData, ['Content-Type' => 'application/json']);
+        $response = $this->json('POST', '/api/users', $userData);
         // Assert
         $response->assertStatus(422)
                  ->assertJsonValidationErrors([
@@ -233,14 +240,10 @@ class UserRegisterTest extends TestCase
     public function test_register_with_userid_registered_return_422(): void
     {
         // Arrange
-        $registeredUser = User::factory()->create([
-            'user_id' => 'ValidUser',
-            'user_name' => 'Valid User',
-            'password' => Hash::make('password'),
-        ]);
+        $registeredUser = User::factory()->create();
         $userData = $this->userData;
         // Act
-        $response = $this->json('POST', '/api/users', $userData, ['Content-Type' => 'application/json']);
+        $response = $this->json('POST', '/api/users', $userData);
         // Assert
         $response->assertStatus(422)
                  ->assertJsonValidationErrors([
@@ -254,12 +257,12 @@ class UserRegisterTest extends TestCase
     {
         // Arrange
         $userData = [
-            'user_id'   => 'Invalid_User-!?<>',
-            'user_name' => 'Invalid User',
+            'user_id'   => 'Test_User-!?<>',
+            'user_name' => 'Test User',
             'password'  => 'Pass123',
         ];
         // Act
-        $response = $this->json('POST', '/api/users', $userData, ['Content-Type' => 'application/json']);
+        $response = $this->json('POST', '/api/users', $userData);
         // Assert
         $response->assertStatus(422)
                  ->assertJsonValidationErrors([
@@ -274,12 +277,12 @@ class UserRegisterTest extends TestCase
     {
         // Arrange
         $userData = [
-            'user_id'   => 'Invalid_UserＡあア',
-            'user_name' => 'Invalid User',
+            'user_id'   => 'Test_UserＡあア',
+            'user_name' => 'Test User',
             'password'  => 'Pass_-!@',
         ];
         // Act
-        $response = $this->json('POST', '/api/users', $userData, ['Content-Type' => 'application/json']);
+        $response = $this->json('POST', '/api/users', $userData);
         // Assert
         $response->assertStatus(422)
                     ->assertJsonValidationErrors([
