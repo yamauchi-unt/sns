@@ -8,8 +8,10 @@ abstract class TestCase extends BaseTestCase
 {
     use CreatesApplication;
 
-    // バリデーションのエラーメッセージ
-    protected $errorMessage = [
+    /**
+     * バリデーションのエラーメッセージ
+     */
+    const ERROR_MSG = [
         'user_id' => [
             'required' => 'ユーザIDを入力してください。',
             'max'      => 'ユーザIDは30文字以内で入力してください。',
