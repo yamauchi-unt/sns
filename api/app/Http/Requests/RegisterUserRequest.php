@@ -23,19 +23,22 @@ class RegisterUserRequest extends FormRequest
     public function rules(): array
     {
         return [
-            "user_id"=> [
-                "required",
-                "string",
-                "max:30",
-                Rule::unique("users")->ignore($this->user_id),
+            'user_id' => [
+                'bail',
+                'required',
+                'string',
+                'max:30',
+                'unique:users,user_id',
                 'regex:/^[A-Za-z0-9_]+$/',
             ],
-            'user_name'=> [
+            'user_name' => [
+                'bail',
                 'required',
                 'string',
                 'max:30',
             ],
-            'password'=> [
+            'password' => [
+                'bail',
                 'required',
                 'string',
                 'regex:/^[A-Za-z\d]{8,}$/'
