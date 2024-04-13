@@ -89,22 +89,7 @@ class UserRegisterTest extends TestCase
     }
 
     /**
-     * 無効なContentType
-     */
-    public static function providerInvalidContentTypes()
-    {
-        return [
-            ['multipart/form-data'],
-            ['application/x-www-form-urlencoded'],
-            ['text/plain'],
-            ['application/javascript'],
-            ['text/html'],
-            ['application/xml'],
-        ];
-    }
-
-    /**
-     * 無効なContent-Type(application/json以外)でリクエスト（異常）
+     * 無効なContent-Typeでリクエスト（異常）
      *
      * @dataProvider providerInvalidContentTypes
      */
@@ -115,42 +100,6 @@ class UserRegisterTest extends TestCase
         // Act
         $response = $this->withHeaders(['Content-Type' => $contentType])
                          ->post($this->path, $userData);
-        // Assert
-        $response->assertStatus(400);
-        $this->assertDatabaseMissing('users', ['user_id' => $userData['user_id']]);
-    }
-
-    /**
-     * 文字列型のフィールドをint型でリクエスト（異常）
-     */
-    public function test_registr_with_int_type_in_string_fields_return_400(): void
-    {
-        // Arrange
-        $userData = [
-            'user_id'   => 99,
-            'user_name' => 99,
-            'password'  => 99,
-        ];
-        // Act
-        $response = $this->json('POST', $this->path, $userData);
-        // Assert
-        $response->assertStatus(400);
-        $this->assertDatabaseMissing('users', ['user_id' => $userData['user_id']]);
-    }
-
-    /**
-     * 文字列型のフィールドをarray型でリクエスト（異常）
-     */
-    public function test_registr_with_array_type_in_string_fields_return_400(): void
-    {
-        // Arrange
-        $userData = [
-            'user_id'   => ['Test_User'],
-            'user_name' => ['Test User'],
-            'password'  => ['password'],
-        ];
-        // Act
-        $response = $this->json('POST', $this->path, $userData);
         // Assert
         $response->assertStatus(400);
         $this->assertDatabaseMissing('users', ['user_id' => $userData['user_id']]);
@@ -175,7 +124,7 @@ class UserRegisterTest extends TestCase
                     'user_id'   => parent::ERROR_MSG['user_id']['required'],
                     'user_name' => parent::ERROR_MSG['user_name']['required'],
                     'password'  => parent::ERROR_MSG['password']['required'],
-        ]);
+                ]);
         $this->assertDatabaseMissing('users', ['user_id' => $userData['user_id']]);
     }
 
@@ -198,12 +147,12 @@ class UserRegisterTest extends TestCase
                     'user_id'   => parent::ERROR_MSG['user_id']['required'],
                     'user_name' => parent::ERROR_MSG['user_name']['required'],
                     'password'  => parent::ERROR_MSG['password']['required'],
-        ]);
+                ]);
         $this->assertCount(0, User::all());
     }
 
     /**
-     * 必須項目をmullでリクエスト（異常）
+     * 必須項目をnullでリクエスト（異常）
      */
     public function test_registr_with_required_fields_null_return_422(): void
     {
@@ -221,7 +170,53 @@ class UserRegisterTest extends TestCase
                     'user_id'   => parent::ERROR_MSG['user_id']['required'],
                     'user_name' => parent::ERROR_MSG['user_name']['required'],
                     'password'  => parent::ERROR_MSG['password']['required'],
-        ]);
+                ]);
+        $this->assertDatabaseMissing('users', ['user_id' => $userData['user_id']]);
+    }
+
+    /**
+     * 文字列型のフィールドをint型でリクエスト（異常）
+     */
+    public function test_registr_with_int_type_in_string_fields_return_422(): void
+    {
+        // Arrange
+        $userData = [
+            'user_id'   => 99,
+            'user_name' => 99,
+            'password'  => 99999999,
+        ];
+        // Act
+        $response = $this->json('POST', $this->path, $userData);
+        // Assert
+        $response->assertStatus(422)
+                 ->assertJsonValidationErrors([
+                    'user_id'   => parent::ERROR_MSG['user_id']['string'],
+                    'user_name' => parent::ERROR_MSG['user_name']['string'],
+                    'password'  => parent::ERROR_MSG['password']['string'],
+                ]);
+        $this->assertDatabaseMissing('users', ['user_id' => $userData['user_id']]);
+    }
+
+    /**
+     * 文字列型のフィールドをarray型でリクエスト（異常）
+     */
+    public function test_registr_with_array_type_in_string_fields_return_422(): void
+    {
+        // Arrange
+        $userData = [
+            'user_id'   => ['Test_User'],
+            'user_name' => ['Test User'],
+            'password'  => ['password'],
+        ];
+        // Act
+        $response = $this->json('POST', $this->path, $userData);
+        // Assert
+        $response->assertStatus(422)
+                 ->assertJsonValidationErrors([
+                    'user_id'   => parent::ERROR_MSG['user_id']['string'],
+                    'user_name' => parent::ERROR_MSG['user_name']['string'],
+                    'password'  => parent::ERROR_MSG['password']['string'],
+                ]);
         $this->assertDatabaseMissing('users', ['user_id' => $userData['user_id']]);
     }
 
@@ -264,7 +259,7 @@ class UserRegisterTest extends TestCase
                  ->assertJsonValidationErrors([
                     'user_id'   => parent::ERROR_MSG['user_id']['max'],
                     'user_name' => parent::ERROR_MSG['user_name']['max'],
-        ]);
+                ]);
         $this->assertDatabaseMissing('users', ['user_id' => $userData['user_id']]);
     }
 
@@ -286,7 +281,7 @@ class UserRegisterTest extends TestCase
         $response->assertStatus(422)
                  ->assertJsonValidationErrors([
                     'user_id' => parent::ERROR_MSG['user_id']['unique'],
-        ]);
+                ]);
         $this->assertCount(1, User::where('user_id', $registeredUser->user_id)->get());
     }
 
@@ -308,7 +303,7 @@ class UserRegisterTest extends TestCase
                  ->assertJsonValidationErrors([
                     'user_id'  => parent::ERROR_MSG['user_id']['regex'],
                     'password' => parent::ERROR_MSG['password']['regex'],
-        ]);
+                ]);
         $this->assertDatabaseMissing('users', ['user_id' => $userData['user_id']]);
     }
 
@@ -327,10 +322,10 @@ class UserRegisterTest extends TestCase
         $response = $this->json('POST', $this->path, $userData);
         // Assert
         $response->assertStatus(422)
-                    ->assertJsonValidationErrors([
+                 ->assertJsonValidationErrors([
                     'user_id'  => parent::ERROR_MSG['user_id']['regex'],
                     'password' => parent::ERROR_MSG['password']['regex'],
-        ]);
+                ]);
         $this->assertDatabaseMissing('users', ['user_id' => $userData['user_id']]);
     }
 }
