@@ -31,7 +31,7 @@ class AuthTokenStoreTest extends TestCase
     }
 
     /**
-     * 有効なログインデータ（UserFactoryと合致）
+     * 有効なログインデータ（UserFactoryと同値）
      */
     protected $loginData = [
         'user_id'  => 'Test_User',
@@ -70,99 +70,48 @@ class AuthTokenStoreTest extends TestCase
     }
 
     /**
-     * 文字列型のフィールドをint型でリクエスト（異常）
+     * リクエストボディを空でリクエスト（異常）
      */
-    public function test_store_with_int_type_in_string_fields_return_400(): void
+    public function test_store_without_request_body_return_400(): void
     {
         // Arrange
-        $loginData = [
-            'user_id'  => 99,
-            'password' => 99,
-        ];
+        $loginData = $this->loginData;
         // Act
-        $response = $this->json('POST', $this->path, $loginData);
+        $response = $this->post($this->path, [], ['Content-Type' => 'application/json']);
         // Assert
         $response->assertStatus(400);
         $this->assertDatabaseMissing('personal_access_tokens', ['tokenable_id' => $this->user->id]);
     }
 
     /**
-     * 文字列型のフィールドをarray型でリクエスト（異常）
+     * ContentTypeをJSON、ボディをXML形式でリクエスト（異常）
      */
-    public function test_store_with_array_type_in_string_fields_return_400(): void
+    public function test_store_with_content_type_json_and_request_body_xml_return_400(): void
     {
         // Arrange
-        $loginData = [
-            'user_id'  => ['Test_User'],
-            'password' => ['password'],
-        ];
+        $xmlData = '<?xml version="1.0" encoding="UTF-8"?><user><user_id>Test_User</user_id><password>password</password></user>';
         // Act
-        $response = $this->json('POST', $this->path, $loginData);
+        $response = $this->call('POST', $this->path, [], [], [], ['CONTENT_TYPE' => 'application/json'], $xmlData);
+        $tokenRecordCount = \DB::table('personal_access_tokens')->count();
         // Assert
         $response->assertStatus(400);
-        $this->assertDatabaseMissing('personal_access_tokens', ['tokenable_id' => $this->user->id]);
+        $this->assertEquals(0, $tokenRecordCount);
     }
 
     /**
-     * 必須項目を空でリクエスト（異常）
+     * 無効なContent-Typeでリクエスト（異常）
+     *
+     * @dataProvider providerInvalidContentTypes
      */
-    public function test_registr_with_empty_required_fields_return_422(): void
+    public function test_store_with_invalid_content_types_return_400($contentType)
     {
         // Arrange
-        $loginData = [
-            'user_id'   => '',
-            'password'  => '',
-        ];
+        $loginData = $this->loginData;
         // Act
-        $response = $this->json('POST', $this->path, $loginData);
+        $response = $this->withHeaders(['Content-Type' => $contentType])
+                         ->post($this->path, $loginData);
         // Assert
-        $response->assertStatus(422)
-                    ->assertJsonValidationErrors([
-                    'user_id'   => parent::ERROR_MSG['user_id']['required'],
-                    'password'  => parent::ERROR_MSG['password']['required'],
-        ]);
-        $this->assertDatabaseMissing('personal_access_tokens', ['tokenable_id' => $this->user->id]);
-    }
-
-    /**
-     * 必須項目をキー無でリクエスト（異常）
-     */
-    public function test_store_without_required_field_keys_return_422(): void
-    {
-        // Arrange
-        $loginData = [
-            '' => 'Test_User',
-            '' => 'password',
-        ];
-        // Act
-        $response = $this->json('POST', $this->path, $loginData);
-        // Assert
-        $response->assertStatus(422)
-                 ->assertJsonValidationErrors([
-                    'user_id'  => parent::ERROR_MSG['user_id']['required'],
-                    'password' => parent::ERROR_MSG['password']['required'],
-        ]);
-        $this->assertDatabaseMissing('personal_access_tokens', ['tokenable_id' => $this->user->id]);
-    }
-
-    /**
-     * 必須項目をnullでリクエスト（異常）
-     */
-    public function test_store_with_required_fields_null_return_422(): void
-    {
-        // Arrange
-        $loginData = [
-            'user_id'  => null,
-            'password' => null,
-        ];
-        // Act
-        $response = $this->json('POST', $this->path, $loginData);
-        // Assert
-        $response->assertStatus(422)
-                 ->assertJsonValidationErrors([
-                    'user_id'  => parent::ERROR_MSG['user_id']['required'],
-                    'password' => parent::ERROR_MSG['password']['required'],
-        ]);
+        $response->assertStatus(400);
         $this->assertDatabaseMissing('personal_access_tokens', ['tokenable_id' => $this->user->id]);
     }
 
@@ -197,6 +146,111 @@ class AuthTokenStoreTest extends TestCase
         $response = $this->json('POST', $this->path, $loginData);
         // Assert
         $response->assertStatus(401);
+        $this->assertDatabaseMissing('personal_access_tokens', ['tokenable_id' => $this->user->id]);
+    }
+
+    /**
+     * 必須項目を空でリクエスト（異常）
+     */
+    public function test_store_with_empty_required_fields_return_422(): void
+    {
+        // Arrange
+        $loginData = [
+            'user_id'   => '',
+            'password'  => '',
+        ];
+        // Act
+        $response = $this->json('POST', $this->path, $loginData);
+        // Assert
+        $response->assertStatus(422)
+                 ->assertJsonValidationErrors([
+                    'user_id'   => parent::ERROR_MSG['user_id']['required'],
+                    'password'  => parent::ERROR_MSG['password']['required'],
+                ]);
+        $this->assertDatabaseMissing('personal_access_tokens', ['tokenable_id' => $this->user->id]);
+    }
+
+    /**
+     * 必須項目をキー無でリクエスト（異常）
+     */
+    public function test_store_without_required_field_keys_return_422(): void
+    {
+        // Arrange
+        $loginData = [
+            '' => 'Test_User',
+            '' => 'password',
+        ];
+        // Act
+        $response = $this->json('POST', $this->path, $loginData);
+        // Assert
+        $response->assertStatus(422)
+                 ->assertJsonValidationErrors([
+                    'user_id'  => parent::ERROR_MSG['user_id']['required'],
+                    'password' => parent::ERROR_MSG['password']['required'],
+                ]);
+        $this->assertDatabaseMissing('personal_access_tokens', ['tokenable_id' => $this->user->id]);
+    }
+
+    /**
+     * 必須項目をnullでリクエスト（異常）
+     */
+    public function test_store_with_required_fields_null_return_422(): void
+    {
+        // Arrange
+        $loginData = [
+            'user_id'  => null,
+            'password' => null,
+        ];
+        // Act
+        $response = $this->json('POST', $this->path, $loginData);
+        // Assert
+        $response->assertStatus(422)
+                 ->assertJsonValidationErrors([
+                    'user_id'  => parent::ERROR_MSG['user_id']['required'],
+                    'password' => parent::ERROR_MSG['password']['required'],
+                ]);
+        $this->assertDatabaseMissing('personal_access_tokens', ['tokenable_id' => $this->user->id]);
+    }
+
+    /**
+     * 文字列型のフィールドをint型でリクエスト（異常）
+     */
+    public function test_store_with_int_type_in_string_fields_return_422(): void
+    {
+        // Arrange
+        $loginData = [
+            'user_id'  => 99,
+            'password' => 99999999,
+        ];
+        // Act
+        $response = $this->json('POST', $this->path, $loginData);
+        // Assert
+        $response->assertStatus(422)
+                 ->assertJsonValidationErrors([
+                    'user_id'  => parent::ERROR_MSG['user_id']['string'],
+                    'password' => parent::ERROR_MSG['password']['string'],
+                ]);
+        $this->assertDatabaseMissing('personal_access_tokens', ['tokenable_id' => $this->user->id]);
+    }
+
+    /**
+     * 文字列型のフィールドをarray型でリクエスト（異常）
+     */
+    public function test_store_with_array_type_in_string_fields_return_422(): void
+    {
+        // Arrange
+        $loginData = [
+            'user_id'  => ['Test_User'],
+            'password' => ['password'],
+        ];
+        // Act
+        $response = $this->json('POST', $this->path, $loginData);
+        // Assert
+        $response->assertStatus(422)
+                 ->assertJsonValidationErrors([
+                    'user_id'  => parent::ERROR_MSG['user_id']['string'],
+                    'password' => parent::ERROR_MSG['password']['string'],
+                ]);
         $this->assertDatabaseMissing('personal_access_tokens', ['tokenable_id' => $this->user->id]);
     }
 }
