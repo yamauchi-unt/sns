@@ -48,9 +48,9 @@ class PostController extends Controller
         $imageService = app(ImageService::class);
 
         // 投稿1件取得
-        $post = Post::showWithImage($post->id, $userId, $imageService);
+        $post->showWithImage($userId, $imageService);
 
-        return response()->json($post, 200);
+        return response()->json($post->transformedPost, 200);
     }
 
     // 投稿1件削除
@@ -62,7 +62,7 @@ class PostController extends Controller
         $this->authorize('delete', $post);
 
         // 投稿・画像削除
-        Post::deleteWithImage($post->id, $imageService);
+        $post->deleteWithImage($imageService);
 
         return response()->noContent(204);
     }

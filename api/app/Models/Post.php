@@ -96,35 +96,33 @@ class Post extends Model
 
 
     // 投稿1件取得
-    public static function showWithImage(string $postId, string $userId, ImageService $imageService)
+    public function showWithImage(string $userId, ImageService $imageService)
     {
-        $post = self::withCount('comments')->find($postId);
+        $this->loadCount('comments');
 
         // データ構造を書き換え
-        $transformedPost = [
-                'post_id' => $post->id,
-                'mine_frg' => $post->user_id === $userId,
-                'user_name' => $post->user->user_name,
-                'image' => $imageService->getEncodedImage($post->id),
-                'message' => $post->message,
-                'post_date' => $post->created_at->toDateTimeString(),
-                'comment_count' => $post->comments_count,
-            ];
+        $this->transformedPost = [
+            'post_id' => $this->id,
+            'mine_frg' => $this->user_id === $userId,
+            'user_name' => $this->user->user_name,
+            'image' => $imageService->getEncodedImage($this->id),
+            'message' => $this->message,
+            'post_date' => $this->created_at->toDateTimeString(),
+            'comment_count' => $this->comments_count,
+        ];
 
-        return $transformedPost;
+        return $this;
     }
 
     // 投稿1件削除
-    public static function deleteWithImage(string $postId, ImageService $imageService)
+    public function deleteWithImage(ImageService $imageService)
     {
-        $post = self::find($postId);
-
         DB::beginTransaction();
         try {
             // 投稿削除
-            $post->delete();
+            $this->post->delete();
             // 画像削除
-            $imageService->deleteImage($postId);
+            $imageService->deleteImage($$this->id);
             DB::commit();
 
         } catch (\Exception $e) {
