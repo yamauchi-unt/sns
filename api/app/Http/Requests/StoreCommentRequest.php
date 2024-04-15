@@ -24,6 +24,7 @@ class StoreCommentRequest extends FormRequest
         return [
             'comment' => [
                 'required',
+                'string',
                 'max:255',
             ],
         ];
