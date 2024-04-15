@@ -24,6 +24,23 @@ abstract class TestCase extends BaseTestCase
     }
 
     /**
+     * 有効な画像形式のエンコード文字列のファイルパス
+     */
+    protected $validImagePath = 'tests/datas/jpeg_image_base64.txt';
+
+    /**
+     * 無効な画像形式のエンコード文字列のファイルパス
+     */
+    public static function providerInvalidImageTypesPath()
+    {
+        return [
+            ['tests/datas/png_image_base64.txt'],
+            ['tests/datas/gif_image_base64.txt'],
+            ['tests/datas/svg_image_base64.txt'],
+        ];
+    }
+
+    /**
      * バリデーションのエラーメッセージ
      */
     const ERROR_MSG = [
@@ -43,6 +60,19 @@ abstract class TestCase extends BaseTestCase
             'required' => 'パスワードを入力してください。',
             'string'   => 'パスワードを正しく入力してください。',
             'regex'    => 'パスワードは半角英数字8文字以上で入力してください。',
+        ],
+        'image' => [
+            'required' => '画像を選択してください。',
+            'size'     => '画像サイズは5MB以下にしてください。',
+            'fmt'      => 'JPEG形式の画像を選択してください。',
+        ],
+        'message' => [
+            'required' => '本文を入力してください。',
+        ],
+        'comment' => [
+            'required' => 'コメントを入力してください。',
+            'string'   => 'コメントを正しく入力してください。',
+            'max'      => 'コメントは255文字以内で入力してください。',
         ],
     ];
 }
