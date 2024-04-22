@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>SNS | 投稿表示</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <!-- header start -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <div class="container-fluid">
+            <a class="navbar-brand mb-0 h1" href="timeline.html">SNS</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse justify-content-end " id="navbarNav">
+                <ul class="navbar-nav">
+                    <li class="nav-item text-center">
+                        <a class="nav-link active" aria-current="page" href="timeline.html">タイムライン</a>
+                    </li>
+                    <li class="nav-item text-center">
+                        <a class="nav-link" href="creat-post.html">投稿</a>
+                    </li>
+                    <li class="nav-item text-center">
+                        <a class="nav-link" href="mypage.html">マイページ</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+    <!-- header end -->
+    <!-- main start -->
+    <div>
+        <!-- content start -->
+        <div class="card">
+            <div class="d-flex justify-content-between align-items-center">
+                <p id="posterName" class="poster-name">Poster Name</p>
+                <a class="bi bi-trash text-dark px-3"></a>
+            </div>
+            <img src="images/1.jpg" id="postedImage" class="card-img-top" alt="">
+            <div class="card-body">
+                <p id="postedStr" class="card-text mb-1">ここに投稿本文が入ります。ここに投稿本文が入ります。ここに投稿本文が入ります。ここに投稿本文が入ります。</p>
+                <div class="card-text mb-1">
+                    <small class="text-body-secondary">
+                        <a href="#" id="commentCount" class="text-decoration-none text-dark" data-bs-toggle="modal" data-bs-target="#staticBackdrop">コメント10件をすべて見る</a>
+                    </small>
+                </div>
+                <div class="card-text mb-1">
+                    <small class="text-body-secondary">
+                        <time id="postedDate" datetime="2024-02-06">2024/02/06</time>
+                    </small>
+                </div>
+            </div>
+        </div>
+        <!-- content end -->
+        <!-- modal start -->
+        <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="staticBackdropLabel">コメント</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="comment">
+                        <div class="comment-info">
+                            <div class="d-flex align-items-center justify-content-between">
+                                <p id="commenterName" class="comment-sender mb-1">Comment Sender 1</p>
+                                <a class="bi bi-trash text-dark"></a>
+                            </div>
+                            <p id="commentedStr" class="comment-text">ここにコメント本文が入ります。ここにコメント本文が入ります。</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <div class="container">
+                        <form>
+                            <div class="input-group">
+                                <input type="text" name="comment" class="form-control" placeholder="コメントを入力">
+                                <button type="submit" class="btn btn-primary">送信</button>
+                            </div>
+                            <div id="errorComment" class="form-text text-danger">コメントを入力してください。</div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            </div>
+        </div>
+        <!-- modal end -->
+    </div>
+    <!-- main end -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz" crossorigin="anonymous"></script>
+</body>
+</html>

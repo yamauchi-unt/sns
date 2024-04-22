@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>SNS | マイページ</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <!-- header start -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <div class="container-fluid">
+            <a class="navbar-brand mb-0 h1" href="timeline.html">SNS</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse justify-content-end " id="navbarNav">
+                <ul class="navbar-nav">
+                    <li class="nav-item text-center">
+                        <a class="nav-link active" aria-current="page" href="timeline.html">タイムライン</a>
+                    </li>
+                    <li class="nav-item text-center">
+                        <a class="nav-link" href="creat-post.html">投稿</a>
+                    </li>
+                    <li class="nav-item text-center">
+                        <a class="nav-link" href="mypage.html">マイページ</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+    <!-- header end -->
+
+    <!-- main start -->
+    <div>
+        <div class="mx-3 my-3">
+            <h1>User Name</h1>
+            <div class="mb-2">
+                <a href="profile.html" class="btn btn-primary">プロフィール編集</a>
+            </div>
+            <div>
+                <button class="btn btn-primary">ログアウト</button>
+            </div>
+        </div>
+        <!-- content start -->
+        <div class="card">
+            <p id="posterName" class="poster-name">Poster Name</p>
+            <a href="post-detail.html">
+                <img src="images/1.jpg" id="postedImage" class="card-img-top" alt="">
+            </a>
+            <div class="card-body">
+                <p class="card-text">
+                    <small class="text-body-secondary">
+                        <time id="postedDate" datetime="2024-02-06">2024/02/06</time>
+                    </small>
+                </p>
+            </div>
+        </div>
+        <div class="card">
+            <p id="posterName" class="poster-name">Poster Name</p>
+            <a href="post-detail.html">
+                <img src="images/1.jpg" id="postedImage" class="card-img-top" alt="">
+            </a>
+            <div class="card-body">
+                <p class="card-text">
+                    <small class="text-body-secondary">
+                        <time id="postedDate" datetime="2024-02-06">2024/02/06</time>
+                    </small>
+                </p>
+            </div>
+        </div>
+        <!-- content end -->
+    </div>
+    <!-- main end -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz" crossorigin="anonymous"></script>
+</body>
+</html>

@@ -1,0 +1,17 @@
+@charset "UTF-8";
+
+.poster-name {
+    font-weight: bold;
+    padding: .5rem 1rem;
+    margin: 0;
+}
+
+h1 {
+    font-size: 1.25rem;
+    font-weight: 500;
+}
+
+.comment-title {
+    font-size: 1rem;
+    font-weight: 500;
+}
