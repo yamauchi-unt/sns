@@ -41,17 +41,20 @@ class ImageService
         return base64_decode($pureBase64Data);
     }
 
-    // 画像データをBase64エンコードで取得する
-    public function getEncodedImage(string $postId)
-    {
-        $imagePath = $this->getImagePath($postId);
+// 画像データをBase64エンコードで取得する
+public function getEncodedImage(string $postId)
+{
+    $imagePath = $this->getImagePath($postId);
 
-        if (Storage::exists($imagePath)) {
-            $imageData = Storage::get($imagePath);
-            return base64_encode($imageData);
-        }
-        return null;
+    if (Storage::exists($imagePath)) {
+        $imageData = Storage::get($imagePath);
+        $mimeType = Storage::mimeType($imagePath);
+        $base64Encoded = base64_encode($imageData);
+        // プレフィックス追加しリターン
+        return 'data:' . $mimeType . ';base64,' . $base64Encoded;
     }
+    return null;
+}
 
     // 画像データを削除する
     public function deleteImage(string $postId)
