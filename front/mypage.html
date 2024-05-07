@@ -7,7 +7,7 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
     <link rel="stylesheet" href="css/style.css">
 </head>
-<body>
+<body class="mypage">
     <!-- header start -->
     <nav class="navbar navbar-expand-lg navbar-light bg-light">
         <div class="container-fluid">
@@ -31,7 +31,6 @@
         </div>
     </nav>
     <!-- header end -->
-
     <!-- main start -->
     <div>
         <div class="mx-3 my-3">
@@ -40,39 +39,17 @@
                 <a href="profile.html" class="btn btn-primary">プロフィール編集</a>
             </div>
             <div>
-                <button class="btn btn-primary">ログアウト</button>
+                <button id="logoutBtn" class="btn btn-primary">ログアウト</button>
             </div>
         </div>
         <!-- content start -->
-        <div class="card">
-            <p id="posterName" class="poster-name">Poster Name</p>
-            <a href="post-detail.html">
-                <img src="images/1.jpg" id="postedImage" class="card-img-top" alt="">
-            </a>
-            <div class="card-body">
-                <p class="card-text">
-                    <small class="text-body-secondary">
-                        <time id="postedDate" datetime="2024-02-06">2024/02/06</time>
-                    </small>
-                </p>
-            </div>
-        </div>
-        <div class="card">
-            <p id="posterName" class="poster-name">Poster Name</p>
-            <a href="post-detail.html">
-                <img src="images/1.jpg" id="postedImage" class="card-img-top" alt="">
-            </a>
-            <div class="card-body">
-                <p class="card-text">
-                    <small class="text-body-secondary">
-                        <time id="postedDate" datetime="2024-02-06">2024/02/06</time>
-                    </small>
-                </p>
-            </div>
+        <div id="postsContainer">
         </div>
         <!-- content end -->
     </div>
     <!-- main end -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz" crossorigin="anonymous"></script>
+    <script src="js/common.js"></script>
+    <script src="js/mypage.js"></script>
 </body>
 </html>

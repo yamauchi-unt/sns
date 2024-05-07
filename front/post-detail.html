@@ -35,25 +35,7 @@
     <!-- main start -->
     <div>
         <!-- content start -->
-        <div class="card">
-            <div class="d-flex justify-content-between align-items-center">
-                <p id="posterName" class="poster-name">Poster Name</p>
-                <a class="bi bi-trash text-dark px-3"></a>
-            </div>
-            <img src="images/1.jpg" id="postedImage" class="card-img-top" alt="">
-            <div class="card-body">
-                <p id="postedStr" class="card-text mb-1">ここに投稿本文が入ります。ここに投稿本文が入ります。ここに投稿本文が入ります。ここに投稿本文が入ります。</p>
-                <div class="card-text mb-1">
-                    <small class="text-body-secondary">
-                        <a href="#" id="commentCount" class="text-decoration-none text-dark" data-bs-toggle="modal" data-bs-target="#staticBackdrop">コメント10件をすべて見る</a>
-                    </small>
-                </div>
-                <div class="card-text mb-1">
-                    <small class="text-body-secondary">
-                        <time id="postedDate" datetime="2024-02-06">2024/02/06</time>
-                    </small>
-                </div>
-            </div>
+        <div id="postContainer" class="card">
         </div>
         <!-- content end -->
         <!-- modal start -->
@@ -65,24 +47,18 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <div class="comment">
-                        <div class="comment-info">
-                            <div class="d-flex align-items-center justify-content-between">
-                                <p id="commenterName" class="comment-sender mb-1">Comment Sender 1</p>
-                                <a class="bi bi-trash text-dark"></a>
-                            </div>
-                            <p id="commentedStr" class="comment-text">ここにコメント本文が入ります。ここにコメント本文が入ります。</p>
-                        </div>
+                    <div id="commentsContainer" class="comment">
                     </div>
                 </div>
                 <div class="modal-footer">
                     <div class="container">
                         <form>
                             <div class="input-group">
-                                <input type="text" name="comment" class="form-control" placeholder="コメントを入力">
+                                <input type="text" name="comment" id="comment" class="form-control" placeholder="コメントを入力">
+                                <!-- <input type="text" name="comment" class="form-control" required placeholder="コメントを入力"> -->
                                 <button type="submit" class="btn btn-primary">送信</button>
                             </div>
-                            <div id="errorComment" class="form-text text-danger">コメントを入力してください。</div>
+                            <!-- <div id="errorComment" class="form-text text-danger">コメントを入力してください。</div> -->
                         </form>
                     </div>
                 </div>
@@ -93,5 +69,7 @@
     </div>
     <!-- main end -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz" crossorigin="anonymous"></script>
+    <script src="js/common.js"></script>
+    <script src="js/post-detail.js"></script>
 </body>
 </html>
