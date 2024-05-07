@@ -41,10 +41,10 @@ function postFormSubmit() {
     }
 
     // 画像のエンコード文字列を非同期で取得
-    ImageBase64Converter.encode(inputs.image).then(imageStr => {
+    ImageBase64Converter.encode(inputs.image).then(base64ImageStr => {
         // 送信するデータ
         const postData = {
-            image: imageStr,
+            image: base64ImageStr,
             message: inputs.message,
         };
 
