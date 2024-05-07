@@ -4,6 +4,9 @@ let isLoading = false;
 
 // ページ読み込みイベント
 document.addEventListener('DOMContentLoaded', function() {
+    // セッションストレージのトークン有無判定
+    TokenManager.hasTokenCheck();
+
     // タイムライン用のエンドポイント
     let apiEndpoint = `${API_BASE_URL}posts`;
 
@@ -47,6 +50,10 @@ function loadPostIds(url) {
         switch (response.status) {
             case 200:
                 return response.json();
+            case 401:
+                alert('再度ログインしてください。');
+                window.location.href = 'login.html';
+                break;
             default:
                 window.location.href = '500.html';
         }
@@ -54,6 +61,12 @@ function loadPostIds(url) {
     // レスポンスボディを処理
     .then(data => {
         console.log(data);
+        // 投稿0件の場合
+        if (data.total === 0) {
+            const postsContainer = document.getElementById('postsContainer');
+            postsContainer.innerHTML = '<p>投稿はありません。</p>';
+            return;
+        }
         // 次ページURL取得
         nextPageUrl = data.next_page_url;
         // 各投稿IDの詳細データを取得する非同期処理の配列を作成
@@ -95,6 +108,10 @@ function loadPostDetails(postId) {
         switch (response.status) {
             case 200:
                 return response.json();
+            case 401:
+                alert('再度ログインしてください。');
+                window.location.href = 'login.html';
+                break;
             default:
                 window.location.href = '500.html';
         }
