@@ -30,7 +30,11 @@ const ERROR_MSG = {
     },
     message: {
         required: '本文を入力してください。',
-    }
+    },
+    comment: {
+        required: 'コメントを入力してください。',
+        max: 'コメントは255文字以内で入力してください。',
+    },
 };
 
 class Validator {
@@ -135,6 +139,17 @@ class TokenManager {
      */
     static removeToken() {
         sessionStorage.removeItem(TokenManager.storageKey);
+    }
+
+    /**
+     * トークン所持判定
+     * @return {void}
+     */
+    static hasTokenCheck() {
+        if (!TokenManager.getToken()) {
+            alert('再度ログインしてください。');
+            window.location.href = 'login.html';
+        }
     }
 }
 
