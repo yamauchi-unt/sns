@@ -59,7 +59,7 @@ class User extends Authenticatable
     public function updateMyprofile(array $value)
     {
         // 'new_password'の値があるか判定
-        if (!empty($validated['new_password'])) {
+        if (!empty($value['new_password'])) {
             // 存在したらハッシュ化
             $this->password = Hash::make($value['new_password']);
         } else {
