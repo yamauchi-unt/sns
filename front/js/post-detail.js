@@ -1,7 +1,12 @@
 let nextPageUrl = null;
+// ロード状態を追跡
+let isLoading = false;
 
 // ページ読み込みイベント
 document.addEventListener('DOMContentLoaded', function() {
+    // セッションストレージのトークン有無判定
+    TokenManager.hasTokenCheck();
+
     // URLから投稿ID取得
     const postId = getPostIdFromUrl();
     // 投稿詳細取得
@@ -37,6 +42,13 @@ function loadPostDetail(postId) {
         switch (response.status) {
             case 200:
                 return response.json();
+            case 401:
+                alert('再度ログインしてください。');
+                window.location.href = 'login.html';
+                break;
+            case 404:
+                window.location.href = '404.html';
+                break;
             default:
                 window.location.href = '500.html';
         }
@@ -103,6 +115,7 @@ function displayPostDetail(postData) {
     if (commentCount) {
         let apiEndpoint = `${API_BASE_URL}posts/${postData.post_id}/comments`;
         commentCount.addEventListener('click', function(event) {
+            // コメント取得
             loadComments(apiEndpoint);
         });
 
@@ -113,9 +126,11 @@ function displayPostDetail(postData) {
                 const scrollPosition = modalBody.scrollTop + modalBody.clientHeight;
                 const modalContentHeight = modalBody.scrollHeight;
         
-                // 画面最下部までスクロール & 次ページがある
-                if (scrollPosition >= modalContentHeight - 10 && nextPageUrl) {
+                // 画面最下部までスクロール & 次ページがある & ロード中ではない場合
+                if (scrollPosition >= modalContentHeight - 10 && nextPageUrl && !isLoading) {
                     console.log("Reached bottom of page");
+                    // ロード中
+                    isLoading = true;
                     // 次ページのコメント取得
                     loadComments(nextPageUrl);
                 }
@@ -123,22 +138,22 @@ function displayPostDetail(postData) {
 
             // コメント削除ボタン押下イベント
             document.addEventListener('click', function(event) {
-                if (event.target.matches('#cDeleteBtn')) {
+                if (event.target.classList.contains('cDeleteBtn')) {
+                    event.preventDefault();
                     const commentId = event.target.getAttribute('comment-id');
                     if (commentId && confirm('コメントを削除してよろしいですか？')) {
+                        // コメント削除
                         deleteComment(commentId);
                     }
                 }
             });
 
             // コメント送信submitボタン押下イベント
-            const form = document.querySelector('form');
-            form.addEventListener('submit', function(event) {
+            document.addEventListener('submit', function(event) {
                 // フォームのデフォルト送信防止
                 event.preventDefault();
-                const postId = getPostIdFromUrl();
                 // コメント送信
-                commentFormSubmit(postId);
+                commentFormSubmit(postData.post_id);
             });
         }
     }
@@ -166,6 +181,10 @@ function deletePost(postId) {
             case 204:
                 alert('投稿が削除されました。');
                 window.location.href = 'timeline.html';
+                break;
+            case 401:
+                alert('再度ログインしてください。');
+                window.location.href = 'login.html';
                 break;
             case 403:
                 alert('削除権限がありません。');
@@ -201,6 +220,10 @@ function loadComments(apiEndpoint) {
         switch (response.status) {
             case 200:
                 return response.json();
+            case 401:
+                alert('再度ログインしてください。');
+                window.location.href = 'login.html';
+                break;
             default:
                 window.location.href = '500.html';
         }
@@ -208,8 +231,18 @@ function loadComments(apiEndpoint) {
     // レスポンスボディを処理
     .then(data => {
         console.log(data);
+        // 投稿0件の場合
+        if (data.total === 0) {
+            const commentsContainer = document.getElementById('commentsContainer');
+            commentsContainer.innerHTML = '<p>コメントはありません。</p>';
+            return;
+        }
+        // 次ページURL取得
         nextPageUrl = data.next_page_url;
+        // コメント表示
         displayComments(data);
+        // ロード終了
+        isLoading = false;
     })
     // 例外処理
     .catch(error => {
@@ -224,25 +257,19 @@ function loadComments(apiEndpoint) {
 function displayComments(commentsData) {
     // コメントコンテナ取得
     const commentsContainer = document.getElementById('commentsContainer');
-    commentsContainer.innerHTML = '';
-    let nextPageUrl = commentsData.next_page_url; 
-
-    if (commentsData.total === 0) {
-        commentsContainer.innerHTML = '<p>コメントはありません。</p>';
-    } else {
-        commentsData.data.forEach(comment => {
-            const commentElement = document.createElement('div');
-            commentElement.className = 'comment-info';
-            commentElement.innerHTML = `
-                <div class="d-flex align-items-center justify-content-between">
-                    <p id="commenterName" class="comment-sender mb-1">${comment.user_name}</p>
-                    ${comment.mine_frg ? `<a href="#" class="bi bi-trash text-dark cDeleteBtn" comment-id="${comment.comment_id}"></a>` : ''}
-                </div>
-                <p class="comment-text">${comment.comment}</p>
-            `;
-            commentsContainer.appendChild(commentElement);
-        });
-    }
+    // 各コメント表示
+    commentsData.data.forEach(comment => {
+        const commentElement = document.createElement('div');
+        commentElement.className = 'comment-info';
+        commentElement.innerHTML = `
+            <div class="d-flex align-items-center justify-content-between">
+                <p class="comment-sender mb-1">${comment.user_name}</p>
+                ${comment.mine_frg ? `<a href="#" class="bi bi-trash text-dark cDeleteBtn" comment-id="${comment.comment_id}"></a>` : ''}
+            </div>
+            <p class="comment-text">${comment.comment}</p>
+        `;
+        commentsContainer.appendChild(commentElement);
+    });
 }
 
 /**
@@ -264,13 +291,17 @@ function deleteComment(commentId) {
     // レスポンス ステータスコード確認
     .then(response => {
         switch (response.status) {
-            case 201:
+            case 204:
                 alert('コメントが削除されました。');
-                // DOMから該当コメント削除
-                const commentElement = document.querySelector(`[comment-id="${commentId}"]`);
-                if (commentElement) {
-                    commentElement.parentNode.removeChild(commentElement);
-                }
+                window.location.reload();
+                break;
+            case 401:
+                alert('再度ログインしてください。');
+                window.location.href = 'login.html';
+                break;
+            case 403:
+                alert('削除権限がありません。');
+                break;
             default:
                 window.location.href = '500.html';
         }
@@ -293,7 +324,7 @@ function commentFormSubmit(postId) {
 
     // バリデーションルール
     const rules = {
-        comment: { required: true , max:255 },
+        comment: { required: true , max: 255 },
     };
 
     // エラーメッセージ表示領域
@@ -331,10 +362,12 @@ function commentFormSubmit(postId) {
         switch (response.status) {
             case 201:
                 alert('コメント送信が完了しました。');
-                // コメント入力欄をクリア
-                commentInput.value = '';
-                // コメントリストを更新する
-                loadComments(`${API_BASE_URL}posts/${postId}/comments`);
+                window.location.reload();
+                break;
+            case 401:
+                alert('再度ログインしてください。');
+                window.location.href = 'login.html';
+                break;
             case 422:
                 return response.json();
             default:
