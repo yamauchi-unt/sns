@@ -120,9 +120,9 @@ class Post extends Model
         DB::beginTransaction();
         try {
             // 投稿削除
-            $this->post->delete();
+            $this->delete();
             // 画像削除
-            $imageService->deleteImage($$this->id);
+            $imageService->deleteImage($this->id);
             DB::commit();
 
         } catch (\Exception $e) {
