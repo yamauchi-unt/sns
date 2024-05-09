@@ -14,11 +14,12 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 /**
- * URLからpostIdを取得
+ * URLからエスケープ処理後のpostIdを取得
  */
 function getPostIdFromUrl() {
     const urlParams = new URLSearchParams(window.location.search);
-    return urlParams.get('postId');
+    const postId = urlParams.get('postId');
+    return encodeURIComponent(postId);
 }
 
 /**
@@ -61,6 +62,7 @@ function loadPostDetail(postId) {
     // 例外処理
     .catch(error => {
         console.error('There was a problem with the fetch operation:', error);
+        window.location.href = '400.html';
     });
 }
 
@@ -196,6 +198,7 @@ function deletePost(postId) {
     // 例外処理
     .catch(error => {
         console.error('There was a problem with the fetch operation:', error);
+        window.location.href = '400.html';
     });
 }
 
@@ -247,6 +250,7 @@ function loadComments(apiEndpoint) {
     // 例外処理
     .catch(error => {
         console.error('There was a problem with the fetch operation:', error);
+        window.location.href = '400.html';
     });
 }
 
@@ -309,6 +313,7 @@ function deleteComment(commentId) {
     // 例外処理
     .catch(error => {
         console.error('There was a problem with the fetch operation:', error);
+        window.location.href = '400.html';
     });
 }
 
@@ -383,5 +388,6 @@ function commentFormSubmit(postId) {
     // 例外処理
     .catch(error => {
         console.error('There was a problem with the fetch operation:', error);
+        window.location.href = '400.html';
     });
 }
