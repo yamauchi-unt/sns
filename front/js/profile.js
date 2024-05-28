@@ -1,52 +1,22 @@
 // ページ読み込みイベント
 document.addEventListener('DOMContentLoaded', function() {
+    // セッションストレージのトークン有無判定
+    TokenManager.hasTokenCheck();
+
+    // 現在のユーザ名取得
     loadUserName();
+
+    // フォーム取得
     const form = document.querySelector('form');
 
-    // submitボタン押下イベント
+    // 変更するボタン押下イベント
     form.addEventListener('submit', function(event) {
         // フォームのデフォルト送信防止
         event.preventDefault();
-        // submitボタン押下後の処理呼び出し
+        // 変更するボタン押下後の処理呼び出し
         profileFormSubmit();
     });
 });
-
-/**
- * プロフィール取得取得
- */
-function loadUserName() {
-    // セッションストレージからトークンを取得
-    const token = TokenManager.getToken();
-
-    // リクエスト送信
-    fetch(`${API_BASE_URL}myprofile`, {
-        method: 'GET',
-        headers: {
-            'Authorization': `Bearer ${token}` ,
-            'Accept': 'application/json',
-        }
-    })
-    // レスポンス ステータスコード確認
-    .then(response => {
-        switch (response.status) {
-            case 200:
-                return response.json();
-            default:
-                window.location.href = '500.html';
-        }
-    })
-    // レスポンスボディを処理
-    .then(data => {
-        console.log(data);
-        console.log(data.user_name);
-        setValueToElement('userName', data.user_name);
-    })
-    // 例外処理
-    .catch(error => {
-        console.error('There was a problem with the fetch operation:', error);
-    });
-}
 
 /**
  * プロフィール編集
@@ -63,14 +33,17 @@ function profileFormSubmit() {
     // バリデーションルール
     const rules = {
         user_name: { required: true , max: 30 },
-        // current_password: { dependent: 'new_password' },
+        current_password: { dependent: ['new_password', 'new_password_confirm'] },
+        new_password: { dependent: ['current_password', 'new_password_confirm'] },
+        new_password_confirm: { dependent: ['current_password', 'new_password'], match: 'new_password' },
     };
 
     // エラーメッセージ表示領域
     const errorFields = {
         user_name: 'errorUserName',
         current_password: 'errorCurrentPass',
-        // new_password: 'errorNewPass1',
+        new_password: 'errorNewPass1',
+        new_password_confirm: 'errorNewPass2',
     };
 
     // バリデーション実行
@@ -108,19 +81,31 @@ function profileFormSubmit() {
                 window.location.href = 'mypage.html';
                 break;
             case 422:
-                return response.json();
+                return response.json().then(data => {
+                    throw { status: response.status, data };
+                });
             default:
-                window.location.href = '500.html';
-        }
-    })
-    // レスポンスボディを処理
-    .then(data => {
-        if (data.errors) {
-            validator.displayErrors(data.errors, errorFields);
+                throw new Error(response.status);
         }
     })
     // 例外処理
     .catch(error => {
-        console.error('There was a problem with the fetch operation:', error);
+        if (error.status === 422 && error.data) {
+            console.error('Validation error:', error.status);
+            console.error('Validation error:', error.data);
+            validator.displayErrors(error.data.errors, errorFields);
+        } else {
+            console.error('Error:', error.message);
+            if (error.message.includes('400')) {
+                window.location.href = '400.html';
+            } else
+            if (error.message.includes('401')) {
+                TokenManager.removeToken();
+                alert('再度ログインしてください。');
+                window.location.href = 'login.html';
+            } else {
+                window.location.href = '500.html';
+            }
+        }
     });
 }
