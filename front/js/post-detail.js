@@ -43,26 +43,31 @@ function loadPostDetail(postId) {
         switch (response.status) {
             case 200:
                 return response.json();
-            case 401:
-                alert('再度ログインしてください。');
-                window.location.href = 'login.html';
-                break;
-            case 404:
-                window.location.href = '404.html';
-                break;
             default:
-                window.location.href = '500.html';
+                throw new Error(response.status);
         }
     })
     // レスポンスボディを処理
     .then(postData => {
         console.log(postData);
+        // 投稿詳細表示
         displayPostDetail(postData);
     })
     // 例外処理
     .catch(error => {
-        console.error('There was a problem with the fetch operation:', error);
-        window.location.href = '400.html';
+        console.error('Error:', error.message);
+        if (error.message.includes('400')) {
+            window.location.href = '400.html';
+        } else
+        if (error.message.includes('401')) {
+            alert('再度ログインしてください。');
+            window.location.href = 'login.html';
+        } else
+        if (error.message.includes('404')) {
+            window.location.href = '404.html';
+        } else {
+            window.location.href = '500.html';
+        }
     });
 }
 
@@ -73,33 +78,86 @@ function loadPostDetail(postId) {
 function displayPostDetail(postData) {
     // 投稿コンテナ取得
     const postContainer = document.getElementById('postContainer');
-    // 投稿文
-    const message = postData.message.replace(/\n/g, '<br>');
-    // 日付を YYYY/MM/DD 形式に変換
-    const date = new Date(postData.post_date).toLocaleDateString('ja-JP');
+    postContainer.innerHTML = '';
 
-    postContainer.innerHTML = `
-    <div class="d-flex justify-content-between align-items-center">
-        <p id="posterName" class="poster-name">${postData.user_name}</p>
-        ${postData.mine_frg ? '<a href="#" id="pDeleteBtn" class="bi bi-trash text-dark px-3"></a>' : ''}
-    </div>
-    <img src="${postData.image}" id="postedImage" class="card-img-top" alt="">
-    <div class="card-body">
-        <p id="postedStr" class="card-text mb-1">${message}</p>
-        <div class="card-text mb-1">
-            <small class="text-body-secondary">
-                <a href="#" id="commentCount" class="text-decoration-none text-dark" data-bs-toggle="modal" data-bs-target="#staticBackdrop">
-                コメント${postData.comment_count}件をすべて見る
-                </a>
-            </small>
-        </div>
-        <div class="card-text mb-1">
-            <small class="text-body-secondary">
-                <time id="postedDate" datetime="${postData.post_date}">${date}</time>
-            </small>
-        </div>
-    </div>
-    `;
+    // 投稿者名と削除ボタンのコンテナ
+    const headerDiv = document.createElement('div');
+    headerDiv.className = 'd-flex justify-content-between align-items-center';
+
+    // 投稿者名
+    const posterName = document.createElement('p');
+    posterName.id = 'posterName';
+    posterName.className = 'poster-name';
+    posterName.textContent = postData.user_name;
+    headerDiv.appendChild(posterName);
+
+    // 削除ボタン
+    if (postData.mine_frg) {
+        const deleteBtn = document.createElement('a');
+        deleteBtn.href = "#";
+        deleteBtn.id = 'pDeleteBtn';
+        deleteBtn.className = 'bi bi-trash text-dark px-3';
+        headerDiv.appendChild(deleteBtn);
+    }
+
+    // 画像
+    const image = document.createElement('img');
+    image.src = postData.image;
+    image.id = 'postedImage';
+    image.className = 'card-img-top';
+    image.alt = '投稿画像';
+
+    // カード本体
+    const cardBody = document.createElement('div');
+    cardBody.className = 'card-body';
+
+    // 投稿テキスト
+    const postedStr = document.createElement('p');
+    postedStr.id = 'postedStr';
+    postedStr.className = 'card-text mb-1';
+    postedStr.innerHTML = postData.message.replace(/\n/g, '<br>'); // 改行を<br>に変換
+
+    // コメント数
+    const commentCount = document.createElement('a');
+    commentCount.href = "#";
+    commentCount.id = 'commentCount';
+    commentCount.className = 'text-decoration-none text-dark';
+    commentCount.setAttribute('data-bs-toggle', 'modal');
+    commentCount.setAttribute('data-bs-target', '#staticBackdrop');
+    commentCount.textContent = `コメントを見る`;
+
+    // コメント数を囲む小さいテキストの要素
+    const small1 = document.createElement('small');
+    small1.className = 'text-body-secondary';
+    small1.appendChild(commentCount);
+
+    // コメント数を含むカードテキスト要素
+    const cardText1 = document.createElement('div');
+    cardText1.className = 'card-text mb-1';
+    cardText1.appendChild(small1);
+
+    // 日付
+    const postDate = document.createElement('time');
+    postDate.setAttribute('datetime', postData.post_date);
+    postDate.textContent = new Date(postData.post_date).toLocaleDateString('ja-JP');
+
+    // 日付を囲む小さいテキストの要素
+    const small2 = document.createElement('small');
+    small2.className = 'text-body-secondary';
+    small2.appendChild(postDate);
+
+    // 日付を含むカードテキスト要素
+    const cardText2 = document.createElement('div');
+    cardText2.className = 'card-text mb-1';
+    cardText2.appendChild(small2);
+
+    // コンテナに要素を追加
+    postContainer.appendChild(headerDiv);
+    postContainer.appendChild(image);
+    cardBody.appendChild(postedStr);
+    cardBody.appendChild(cardText1);
+    cardBody.appendChild(cardText2);
+    postContainer.appendChild(cardBody);
 
     // 投稿削除ボタン押下イベント
     const pDeleteBtn = document.getElementById('pDeleteBtn');
@@ -113,10 +171,15 @@ function displayPostDetail(postData) {
     }
 
     // コメント件数リンク押下イベント
-    const commentCount = document.getElementById('commentCount');
     if (commentCount) {
         let apiEndpoint = `${API_BASE_URL}posts/${postData.post_id}/comments`;
         commentCount.addEventListener('click', function(event) {
+            // コメントモーダルのタイトルをリセット
+            const modalTitle = document.querySelector('#staticBackdrop .modal-title');
+            modalTitle.textContent = 'コメント';
+            // コメントコンテナを取得、内容をクリア
+            const commentsContainer = document.getElementById('commentsContainer');
+            commentsContainer.innerHTML = '';
             // コメント取得
             loadComments(apiEndpoint);
         });
@@ -184,21 +247,25 @@ function deletePost(postId) {
                 alert('投稿が削除されました。');
                 window.location.href = 'timeline.html';
                 break;
-            case 401:
-                alert('再度ログインしてください。');
-                window.location.href = 'login.html';
-                break;
-            case 403:
-                alert('削除権限がありません。');
-                break;
             default:
-                window.location.href = '500.html';
+                throw new Error(response.status);
         }
     })
     // 例外処理
     .catch(error => {
-        console.error('There was a problem with the fetch operation:', error);
-        window.location.href = '400.html';
+        console.error('Error:', error.message);
+        if (error.message.includes('400')) {
+            window.location.href = '400.html';
+        } else
+        if (error.message.includes('401')) {
+            alert('再度ログインしてください。');
+            window.location.href = 'login.html';
+        } else
+        if (error.message.includes('403')) {
+            alert('削除権限がありません。');
+        } else {
+            window.location.href = '500.html';
+        }
     });
 }
 
@@ -223,23 +290,13 @@ function loadComments(apiEndpoint) {
         switch (response.status) {
             case 200:
                 return response.json();
-            case 401:
-                alert('再度ログインしてください。');
-                window.location.href = 'login.html';
-                break;
             default:
-                window.location.href = '500.html';
+                throw new Error(response.status);
         }
     })
     // レスポンスボディを処理
     .then(data => {
         console.log(data);
-        // 投稿0件の場合
-        if (data.total === 0) {
-            const commentsContainer = document.getElementById('commentsContainer');
-            commentsContainer.innerHTML = '<p>コメントはありません。</p>';
-            return;
-        }
         // 次ページURL取得
         nextPageUrl = data.next_page_url;
         // コメント表示
@@ -249,8 +306,16 @@ function loadComments(apiEndpoint) {
     })
     // 例外処理
     .catch(error => {
-        console.error('There was a problem with the fetch operation:', error);
-        window.location.href = '400.html';
+        console.error('Error:', error.message);
+        if (error.message.includes('400')) {
+            window.location.href = '400.html';
+        } else
+        if (error.message.includes('401')) {
+            alert('再度ログインしてください。');
+            window.location.href = 'login.html';
+        } else {
+            window.location.href = '500.html';
+        }
     });
 }
 
@@ -259,19 +324,54 @@ function loadComments(apiEndpoint) {
  * @param {Object} commentsData
  */
 function displayComments(commentsData) {
+    // コメントモーダルタイトル
+    const modalTitle = document.querySelector('#staticBackdrop .modal-title');
+    modalTitle.textContent = `コメント${commentsData.total}件`;
+
     // コメントコンテナ取得
     const commentsContainer = document.getElementById('commentsContainer');
+
+    if (commentsData.total === 0 && commentsContainer.innerHTML === '') {
+        commentsContainer.innerHTML = '<p>コメントはありません。</p>';
+        return;
+    }
     // 各コメント表示
     commentsData.data.forEach(comment => {
+        // コメント全体のコンテナ
         const commentElement = document.createElement('div');
         commentElement.className = 'comment-info';
-        commentElement.innerHTML = `
-            <div class="d-flex align-items-center justify-content-between">
-                <p class="comment-sender mb-1">${comment.user_name}</p>
-                ${comment.mine_frg ? `<a href="#" class="bi bi-trash text-dark cDeleteBtn" comment-id="${comment.comment_id}"></a>` : ''}
-            </div>
-            <p class="comment-text">${comment.comment}</p>
-        `;
+
+        // ユーザー名と削除ボタンのコンテナえｇ
+        const headerDiv = document.createElement('div');
+        headerDiv.className = 'd-flex align-items-center justify-content-between';
+
+        // ユーザー名
+        const usernameP = document.createElement('p');
+        usernameP.className = 'comment-sender mb-1';
+        usernameP.textContent = comment.user_name;
+        headerDiv.appendChild(usernameP);
+
+        // 削除ボタン
+        if (comment.mine_frg) {
+            const deleteBtn = document.createElement('a');
+            deleteBtn.href = "#";
+            deleteBtn.className = 'bi bi-trash text-dark cDeleteBtn';
+            deleteBtn.setAttribute('comment-id', comment.comment_id);
+            headerDiv.appendChild(deleteBtn);
+        }
+
+        // コメントテキスト
+        const commentTextP = document.createElement('p');
+        commentTextP.className = 'comment-text';
+        commentTextP.textContent = comment.comment;
+        const errorComment = document.getElementById('errorComment');
+        errorComment.textContent = '';
+
+        // 要素を組み立て
+        commentElement.appendChild(headerDiv);
+        commentElement.appendChild(commentTextP);
+
+        // コメントコンテナに追加
         commentsContainer.appendChild(commentElement);
     });
 }
@@ -299,21 +399,25 @@ function deleteComment(commentId) {
                 alert('コメントが削除されました。');
                 window.location.reload();
                 break;
-            case 401:
-                alert('再度ログインしてください。');
-                window.location.href = 'login.html';
-                break;
-            case 403:
-                alert('削除権限がありません。');
-                break;
             default:
-                window.location.href = '500.html';
+                throw new Error(response.status);
         }
     })
     // 例外処理
     .catch(error => {
-        console.error('There was a problem with the fetch operation:', error);
-        window.location.href = '400.html';
+        console.error('Error:', error.message);
+        if (error.message.includes('400')) {
+            window.location.href = '400.html';
+        } else
+        if (error.message.includes('401')) {
+            alert('再度ログインしてください。');
+            window.location.href = 'login.html';
+        } else
+        if (error.message.includes('403')) {
+            alert('削除権限がありません。');
+        } else {
+            window.location.href = '500.html';
+        }
     });
 }
 
@@ -369,25 +473,34 @@ function commentFormSubmit(postId) {
                 alert('コメント送信が完了しました。');
                 window.location.reload();
                 break;
-            case 401:
-                alert('再度ログインしてください。');
-                window.location.href = 'login.html';
-                break;
             case 422:
-                return response.json();
+                return response.json().then(data => {
+                    throw { status: response.status, data };
+                });
             default:
-                window.location.href = '500.html';
-        }
-    })
-    // レスポンスボディを処理
-    .then(data => {
-        if (data.errors) {
-            validator.displayErrors(data.errors, errorFields);
+                throw new Error(response.status);
         }
     })
     // 例外処理
     .catch(error => {
-        console.error('There was a problem with the fetch operation:', error);
-        window.location.href = '400.html';
+        if (error.status === 422 && error.data) {
+            console.error('Validation error:', error.status);
+            console.error('Validation error:', error.data);
+            validator.displayErrors(error.data.errors, errorFields);
+        } else {
+            console.error('Error:', error.message);
+            if (error.message.includes('400')) {
+                window.location.href = '400.html';
+            } else
+            if (error.message.includes('401')) {
+                alert('再度ログインしてください。');
+                window.location.href = 'login.html';
+            } else
+            if (error.message.includes('404')) {
+                window.location.href = '404.html';
+            } else {
+                window.location.href = '500.html';
+            }
+        }
     });
 }
