@@ -2,17 +2,17 @@
 document.addEventListener('DOMContentLoaded', function() {
     const form = document.querySelector('form');
 
-    // submitボタン押下イベント
+    // 新規登録ボタン押下イベント
     form.addEventListener('submit', function(event) {
         // フォームのデフォルト送信防止
         event.preventDefault();
-        // submitボタン押下後の処理呼び出し
+        // 新規登録ボタン押下後の処理呼び出し
         registerFormSubmit();
     });
 });
 
 /**
- * submitボタン押下後の処理
+ * 新規登録ボタン押下後の処理
  */
 function registerFormSubmit() {
     // 入力値
@@ -70,19 +70,26 @@ function registerFormSubmit() {
                 window.location.href = 'login.html';
                 break;
             case 422:
-                return response.json();
+                return response.json().then(data => {
+                    throw { status: response.status, data };
+                });
             default:
-                window.location.href = '500.html';
-        }
-    })
-    // レスポンスボディを処理
-    .then(data => {
-        if (data.errors) {
-            validator.displayErrors(data.errors, errorFields);
+                throw new Error(response.status);
         }
     })
     // 例外処理
     .catch(error => {
-        console.error('There was a problem with the fetch operation:', error);
+        if (error.status === 422 && error.data) {
+            console.error('Validation error:', error.status);
+            console.error('Validation error:', error.data);
+            validator.displayErrors(error.data.errors, errorFields);
+        } else {
+            console.error('Error:', error.message);
+            if (error.message.includes('400')) {
+                window.location.href = '400.html';
+            } else {
+                window.location.href = '500.html';
+            }
+        }
     });
 }
