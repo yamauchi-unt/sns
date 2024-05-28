@@ -2,17 +2,17 @@
 document.addEventListener('DOMContentLoaded', function() {
     const form = document.querySelector('form');
 
-    // submitボタン押下
+    // ログインボタン押下イベント
     form.addEventListener('submit', function(event) {
         // フォームのデフォルト送信防止
         event.preventDefault();
-        // submitボタン押下後の処理呼び出し
+        // ログインボタン押下後の処理呼び出し
         loginFormSubmit();
     });
 });
 
 /**
- * submitボタン押下後の処理
+ * ログインボタン押下後の処理
  */
 function loginFormSubmit() {
     // 入力値
@@ -60,14 +60,12 @@ function loginFormSubmit() {
         switch (response.status) {
             case 200:
                 return response.json();
-            case 401:
-                const loginError = document.getElementById('errorLogin');
-                loginError.textContent = 'ユーザIDまたはパスワードが違います。';
-                throw new Error('Unauthorized');
             case 422:
-                return response.json();
+                return response.json().then(data => {
+                    throw { status: response.status, data };
+                });
             default:
-                window.location.href = '500.html';
+                throw new Error(response.status);
         }
     })
     // レスポンスボディを処理
@@ -77,12 +75,24 @@ function loginFormSubmit() {
             TokenManager.saveToken(data.token);
             window.location.href = 'timeline.html';
         }
-        if (data.errors) {
-            validator.displayErrors(data.errors, errorFields);
-        }
     })
     // 例外処理
     .catch(error => {
-        console.error('There was a problem with the fetch operation:', error);
+        if (error.status === 422 && error.data) {
+            console.error('Validation error:', error.status);
+            console.error('Validation error:', error.data);
+            validator.displayErrors(error.data.errors, errorFields);
+        } else {
+            console.error('Error:', error.message);
+            if (error.message.includes('400')) {
+                window.location.href = '400.html';
+            } else
+            if (error.message.includes('401')) {
+                const loginError = document.getElementById('errorLogin');
+                loginError.textContent = 'ユーザIDまたはパスワードが違います。';
+            } else {
+                window.location.href = '500.html';
+            }
+        }
     });
 }
