@@ -4,6 +4,12 @@ let isLoading = false;
 
 // ページ読み込みイベント
 document.addEventListener('DOMContentLoaded', function() {
+    // セッションストレージのトークン有無判定
+    TokenManager.hasTokenCheck();
+
+    // 現在のユーザ名取得
+    loadUserName();
+
     // マイページ用のエンドポイント
     let apiEndpoint = `${API_BASE_URL}myposts`;
 
@@ -36,119 +42,8 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 /**
- * 投稿ID一覧取得
+ * ログアウト
  */
-function loadPostIds(url) {
-    // セッションストレージからトークンを取得
-    const token = TokenManager.getToken();
-
-    // リクエスト送信
-    fetch(url, {
-        method: 'GET',
-        headers: {
-            'Authorization': `Bearer ${token}` ,
-            'Accept': 'application/json',
-        }
-    })
-    // レスポンス ステータスコード確認
-    .then(response => {
-        switch (response.status) {
-            case 200:
-                return response.json();
-            default:
-                window.location.href = '500.html';
-        }
-    })
-    // レスポンスボディを処理
-    .then(data => {
-        console.log(data);
-        // 次ページURL取得
-        nextPageUrl = data.next_page_url;
-        // 各投稿IDの詳細データを取得する非同期処理の配列を作成
-        const detailsPromises = data.data.map(post => loadPostDetails(post.id));
-        // すべての投稿データが取得できた後に画面に表示
-        Promise.all(detailsPromises).then(posts => {
-            posts.forEach(postData => {
-                displayPost(postData);
-            });
-        });
-        // ロード終了
-        isLoading = false;
-    })
-    // 例外処理
-    .catch(error => {
-        console.error('There was a problem with the fetch operation:', error);
-    });
-}
-
-/**
- * 投稿詳細取得
- * @param {string} postId
- * @return {Promise<Object>}
- */
-function loadPostDetails(postId) {
-    // セッションストレージからトークンを取得
-    const token = TokenManager.getToken();
-
-    // リクエスト送信
-    return fetch(`${API_BASE_URL}posts/${postId}`, {
-        method: 'GET',
-        headers: {
-            'Authorization': `Bearer ${token}`,
-            'Accept': 'application/json',
-        }
-    })
-    // レスポンス ステータスコード確認
-    .then(response => {
-        switch (response.status) {
-            case 200:
-                return response.json();
-            default:
-                window.location.href = '500.html';
-        }
-    })
-    // 例外処理
-    .catch(error => {
-        console.error('There was a problem with the fetch operation:', error);
-    });
-}
-
-/**
- * 投稿表示
- * @param {Object} postData
- */
-function displayPost(postData) {
-    // 投稿コンテナ取得
-    const postsContainer = document.getElementById('postsContainer');
-
-    // 日付を YYYY/MM/DD 形式に変換
-    const postedDate = new Date(postData.post_date).toLocaleDateString('ja-JP');
-    // 日付を YYYY-MM-DD 形式に変換
-    const datetime = postData.post_date;
-
-    // Bootstrap用cardのHTMLを生成
-    const postCard = document.createElement('div');
-    postCard.className = 'card';
-
-    // cardの内容を設定
-    postCard.innerHTML = `
-        <p class="poster-name">${postData.user_name}</p>
-        <a href="post-detail.html?postId=${postData.post_id}">
-            <img src="${postData.image}" class="card-img-top" alt="投稿画像">
-        </a>
-        <div class="card-body">
-            <p class="card-text">
-                <small class="text-muted">
-                    <time datetime="${datetime}">${postedDate}</time>
-                </small>
-            </p>
-        </div>
-    `;
-
-    // 投稿コンテナにcardを追加
-    postsContainer.appendChild(postCard);
-}
-
 function logout() {
     // セッションストレージからトークンを取得
     const token = TokenManager.getToken();
@@ -171,11 +66,21 @@ function logout() {
                 window.location.href = 'login.html';
                 break;
             default:
-                window.location.href = '500.html';
+                throw new Error(response.status);
         }
     })
     // 例外処理
     .catch(error => {
-        console.error('There was a problem with the fetch operation:', error);
+        console.error('Error:', error.message);
+        if (error.message.includes('400')) {
+            window.location.href = '400.html';
+        } else
+        if (error.message.includes('401')) {
+            TokenManager.removeToken();
+            alert('再度ログインしてください。');
+            window.location.href = 'login.html';
+        } else {
+            window.location.href = '500.html';
+        }
     });
 }
